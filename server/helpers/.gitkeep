@@ -1,0 +1,13 @@
+# helpers/
+
+# - Small, reusable pure functions used across the app
+
+# - NOT tied to any specific layer
+
+# Example files:
+
+# paginate.js → Build pagination metadata
+
+# formatDate.js → Format date strings
+
+# slugify.js → Convert title to URL slug

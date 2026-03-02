@@ -1,0 +1,15 @@
+# Repository/
+
+# - Data access layer — all direct DB queries live here
+
+# - Services call Repository methods, never query DB directly
+
+# - Keeps DB logic isolated and easy to swap/test
+
+# Example files:
+
+# userRepository.js → findByEmail, createUser, findById
+
+# bookRepository.js → findAll, findById, create, update, delete
+
+# orderRepository.js → createOrder, findByUser, findById

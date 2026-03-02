@@ -1,3 +1,15 @@
-// Add your Express routes here
-// Example: bookRoutes.js, authRoutes.js, userRoutes.js, etc.
-// Routes define the API endpoints
+# routes/
+
+# - Define API endpoints and map them to controllers
+
+# - Apply route-level middleware (auth, validation)
+
+# Example files:
+
+# authRoutes.js → POST /api/auth/register, /login, /logout, /me
+
+# bookRoutes.js → GET|POST /api/books, GET|PUT|DELETE /api/books/:id
+
+# orderRoutes.js → POST /api/orders, GET /api/orders/my
+
+# favoriteRoutes.js → GET|POST|DELETE /api/favorites

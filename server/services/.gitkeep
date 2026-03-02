@@ -1,0 +1,9 @@
+# services/
+# - Business logic layer
+# - Called by controllers, calls Repository for DB access
+# - Handles things like: hashing passwords, generating JWT, checking stock
+# Example files:
+#   authService.js    → registerUser, loginUser, getMe
+#   bookService.js    → getAllBooks, getBook, createBook, updateBook, deleteBook
+#   orderService.js   → placeOrder, getUserOrders
+#   emailService.js   → sendWelcomeEmail, sendOrderConfirmation

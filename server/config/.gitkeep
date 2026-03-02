@@ -1,2 +1,7 @@
-// Add your database configuration here
-// Example: MongoDB connection, database setup, etc.
+# config/
+
+# - db.js → MongoDB connection setup (mongoose.connect)
+
+# - env.js → Load and export validated environment variables
+
+# - constants.js → App-wide constants (roles, status codes, etc.)
