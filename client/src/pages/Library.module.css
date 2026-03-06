@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  min-height: 100vh;
 }
 
 .heroSection {
@@ -11,15 +11,43 @@
   align-items: center;
   justify-content: center;
   height: 90vh;
+  width: 100%;
+  position: relative;
+}
+
+.heroSectionBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 90vh;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.heroSectionBackground img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.75);
+}
+
+.heroOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.4);
 }
 
 .heroSection h1 {
   font-family: 'Playfair Display', serif;
   font-size: 96px;
   font-weight: 700;
-  color: #141415;
-  margin-bottom: 2rem;
-  text-shadow: 0px 4px 4px 0px #00000040;
+  color: #fff;
+  margin-bottom: 2.5rem;
+  text-shadow: 0px 4px 4px #00000040;
 }
 
 .heroSection .searchBar {
@@ -29,6 +57,7 @@
   padding: 0.75rem 1.5rem;
   border-radius: 20px;
   width: 800px;
+  background: #fff;
   gap: 1rem;
   box-shadow: 0px 4px 4px 0px #00000040;
 }
@@ -37,6 +66,7 @@
   display: flex;
   align-items: center;
   width: 100%;
+  gap: 0.75rem;
 }
 
 .heroSection input {
@@ -48,10 +78,7 @@
   width: 100%;
   outline: none;
   border: none;
-}
-
-.heroSection input:focus .searchBar {
-  box-shadow: 0px 0px 0px 2px #0a1e54;
+  background: transparent;
 }
 
 .heroSection input::placeholder {
@@ -63,9 +90,10 @@
 .heroSection .searchIcon {
   font-size: 32px;
   color: #90a1b9;
+  flex-shrink: 0;
 }
 
-.filterButton {
+.searchButton {
   margin-left: 1rem;
   padding: 2rem 3rem;
   font-size: 20px;
@@ -75,14 +103,601 @@
   color: #fff;
   border: none;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+  white-space: nowrap;
 }
 
-.filterButton:hover {
+.searchButton:hover {
   background-color: #0a1e54cc;
 }
 
-.filterButton:active {
-  background-color: #0a1e54aa;
-  transform: scale(0.95);
+.searchButton:active {
+  transform: scale(0.97);
+}
+
+/* ── Library Container ── */
+.libraryContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1400px;
+  padding: 2.5rem 2rem 5rem;
+  box-sizing: border-box;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  flex: 0 0 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: sticky;
+  top: 1.5rem;
+}
+
+.filterSection {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.25rem 1.25rem 0.5rem;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+}
+
+.filterHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.filterHeader h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #141415;
+  margin: 0;
+}
+
+.resetButton {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0d9488;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.resetButton:hover {
+  opacity: 0.75;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem 0;
+  border-top: 1px solid #edf0f5;
+}
+
+.filterGroup h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #141415;
+  margin: 0 0 0.25rem;
+  letter-spacing: 0.06em;
+}
+
+/* ── Custom Checkbox ── */
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 13.5px;
+  font-weight: 400;
+  color: #4a5a70;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1.4;
+}
+
+.checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  border: 2px solid #cad5e2;
+  background: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.checkbox:checked {
+  border-color: #0d9488;
+}
+
+.checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: #0d9488;
+}
+
+/* ── Price Range ── */
+.priceRangeRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #90a1b9;
+  margin-bottom: 0.25rem;
+}
+
+.rangeSlider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 10px;
+  border-radius: 4px;
+  background: linear-gradient(
+    to right,
+    #0d9488 var(--slider-percent, 100%),
+    #f1f5f9 var(--slider-percent, 100%)
+  );
+  outline: none;
+  cursor: pointer;
+}
+
+.rangeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #0d9488;
+  box-shadow: 0 0 0 1.5px #0d9488;
+  cursor: pointer;
+  transition: border 0.15s ease;
+}
+
+.rangeSlider::-webkit-slider-thumb:hover {
+  border: 2px solid #f1f5f9;
+}
+
+.rangeSlider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #0a1e54;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 1.5px #0a1e54;
+  cursor: pointer;
+}
+
+/* ── Format Filter Buttons (2×2 grid) ── */
+.filterButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.filterButton {
+  padding: 0.8rem 1rem;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 2px solid #f1f5f9;
+  background: #fff;
+  color: #0f172a;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.18s ease;
+}
+
+.filterButton:hover {
+  border-color: #0d9488;
+}
+
+.filterButton.selected {
+  background: #def1f0;
+  color: #0d9488;
+  border-color: #0d9488;
+}
+
+/* ── Membership Card ── */
+.membershipSection {
+  background: #0f172a;
+  border-radius: 30px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.membershipHeader {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #b39a84;
+  margin: 1rem;
+}
+
+.membershipTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fafafa;
+  margin: 1rem 0;
+  line-height: 1.35;
+}
+
+.membershipDescription {
+  font-size: 20px;
+  font-weight: 600;
+  color: #90a1b9;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.membershipButton {
+  margin-top: 0.5rem;
+  padding: 2rem 2.5rem;
+  font-size: 20px;
+  font-weight: 700;
+  border-radius: 20px;
+  border: none;
+  background: #b39a84;
+  color: #fff;
+  cursor: pointer;
+  margin: 1rem;
+  transition: opacity 0.2s;
+}
+
+.membershipButton:hover {
+  opacity: 0.88;
+}
+
+/* ── Book Grid ── */
+.bookGrid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+/* ── Filters Info Bar ── */
+.filtersInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+}
+
+.filtersInfo p {
+  margin: 0;
+  color: #888;
+  font-size: 13px;
+}
+
+.sortRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.sortRow label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #141415;
+  white-space: nowrap;
+}
+
+.sortRow select {
+  padding: 0.35rem 0.65rem;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1.5px solid #d0d8e4;
+  border-radius: 8px;
+  background: #fff;
+  color: #141415;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.18s;
+}
+
+.sortRow select:focus {
+  border-color: #0a1e54;
+}
+
+/* ── Books Grid ── */
+.booksContainer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+/* ── Book Card ── */
+.bookCard {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+  cursor: pointer;
+  will-change: transform;
+  min-width: 0;
+}
+
+.bookCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.13);
+}
+
+.bookImgWrapper {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #e4e8ef;
+  flex-shrink: 0;
+}
+
+.bookImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+  will-change: transform;
+}
+
+.bookCard:hover .bookImg {
+  transform: scale(1.04);
+}
+
+.bookInfo {
+  padding: 0.8rem 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+/* ── Format + Favorite Row ── */
+.bookFormatRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bookFormat {
+  font-size: 13px;
+  font-weight: 700;
+  color: #b39a84;
+  text-transform: uppercase;
+  border-radius: 6px;
+}
+
+.addToFavoritesButton {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid #b39a84;
+  background: #fff;
+  color: #b39a84;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.addToFavoritesButton:hover {
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+.addToFavoritesButton.favorited {
+  border-color: #e74c3c;
+  color: #e74c3c;
+  background: #fff0ee;
+}
+
+/* ── Book Text ── */
+.bookTitle {
+  font-family: 'Noto Sans Arabic', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #141415;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bookAuthor {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.bookBottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.bookPrice {
+  font-size: 16px;
+  font-weight: 700;
+  color: #141415;
+}
+
+.addToCart {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid #0a1e54;
+  background: #0a1e54;
+  color: #fff;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.addToCart:hover {
+  background: #0a1e54cc;
+  border-color: #0a1e54cc;
+}
+
+/* ── Pagination ── */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 1.5rem 0 0.5rem;
+}
+
+.pageButton {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1.5px solid #d0d8e4;
+  background: #fff;
+  color: #555;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.5rem;
+  transition: all 0.18s;
+}
+
+.pageButton:hover {
+  border-color: #0a1e54;
+  color: #0a1e54;
+}
+
+.pageButton.activePage {
+  background: #0a1e54;
+  color: #fff;
+  border-color: #0a1e54;
+}
+
+.pageArrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1.5px solid #d0d8e4;
+  background: #fff;
+  color: #555;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.pageArrow:hover:not(:disabled) {
+  border-color: #0a1e54;
+  color: #0a1e54;
+}
+
+.pageArrow:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ── Empty State ── */
+.emptyState {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 4rem 2rem;
+  color: #90a1b9;
+  font-size: 16px;
+  text-align: center;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1400px) {
+  .booksContainer {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1200px) {
+  .booksContainer {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 960px) {
+  .libraryContainer {
+    flex-direction: column;
+    padding: 1.5rem;
+  }
+
+  .sidebar {
+    position: static;
+    flex: none;
+    width: 100%;
+  }
+
+  .booksContainer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .heroSection h1 {
+    font-size: 60px;
+    text-align: center;
+  }
+
+  .heroSection .searchBar {
+    width: 90%;
+  }
+}
+
+@media (max-width: 640px) {
+  .booksContainer {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .heroSection h1 {
+    font-size: 40px;
+  }
+
+  .searchButton {
+    padding: 0.85rem 1.25rem;
+    font-size: 15px;
+  }
 }
