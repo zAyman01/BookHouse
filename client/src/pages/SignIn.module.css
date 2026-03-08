@@ -1,0 +1,364 @@
+/* ── Split row: image | form ──────────────────────────── */
+.main {
+  display: flex;
+  flex: 1;
+  min-height: 100vh;
+}
+
+/* ── Left image panel ───────────────────────────────── */
+.imagePanel {
+  flex: 0 0 50%;
+  position: relative;
+  overflow: hidden;
+  background-image: url('../assets/sign-in.jpg');
+  background-size: cover;
+  background-position: center;
+  background-color: #1a120b;
+}
+
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    rgba(10, 18, 40, 0.5) 0%,
+    rgba(10, 18, 40, 0.88) 100%
+  );
+  display: flex;
+  align-items: flex-end;
+  padding: 56px 48px;
+}
+
+.brandOverlay {
+  color: #fff;
+}
+
+.brandName {
+  font-family: 'Dancing Script', cursive;
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+
+.brandTag {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 300;
+  letter-spacing: 0.3px;
+}
+
+/* ── Right form panel ───────────────────────────────── */
+.formPanel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 40px 24px;
+  background: linear-gradient(135deg, #fdf0ea 0%, #f5e6f8 50%, #e8f0fc 100%);
+  background-size: 300% 300%;
+  animation: panelShift 12s ease infinite;
+}
+
+@keyframes panelShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ── Glass card ─────────────────────────────────────── */
+.formCard {
+  width: 100%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 24px;
+  padding: 52px 44px 44px;
+  box-shadow:
+    0 8px 32px rgba(26, 45, 90, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Card header ────────────────────────────────────── */
+.cardHeader {
+  margin-bottom: 36px;
+  text-align: center;
+}
+
+.title {
+  font-family: 'Dancing Script', cursive;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #1a2d5a;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 0.88rem;
+  color: #6b7a99;
+  letter-spacing: 0.2px;
+}
+
+/* ── Form ───────────────────────────────────────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+/* ── Field group (wrapper + optional error message) ── */
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 8px;
+}
+
+/* ── Input wrapper ─────────────────────────────────── */
+.inputWrapper {
+  position: relative;
+}
+
+/* Left icon */
+.inputIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9aaac8;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  transition: color 0.22s;
+  z-index: 1;
+}
+
+/* Icon turns navy when the field is active or filled (requires :has support) */
+.inputWrapper:has(.input:focus) .inputIcon,
+.inputWrapper:has(.input:not(:placeholder-shown)) .inputIcon {
+  color: #1a2d5a;
+}
+
+.inputWrapper.hasError .inputIcon {
+  color: #d32f2f;
+}
+
+/* ── Input ─────────────────────────────────────────── */
+.input {
+  display: block;
+  width: 100%;
+  padding: 14px 46px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1.5px solid rgba(180, 195, 230, 0.8);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #1a2d5a;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition:
+    border-color 0.22s,
+    background 0.22s,
+    box-shadow 0.22s;
+}
+
+.input:focus {
+  border-color: #1a2d5a;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 0 0 4px rgba(26, 45, 90, 0.1);
+}
+
+/* Error state overrides */
+.hasError .input {
+  border-color: #d32f2f;
+}
+
+.hasError .input:focus {
+  border-color: #d32f2f;
+  box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.1);
+}
+
+/* ── Floating label ─────────────────────────────────── */
+.floatLabel {
+  position: absolute;
+  left: 46px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  color: #9aaac8;
+  pointer-events: none;
+  background: transparent;
+  padding: 0;
+  border-radius: 2px;
+  transition:
+    top 0.22s ease,
+    transform 0.22s ease,
+    font-size 0.22s ease,
+    color 0.22s ease,
+    letter-spacing 0.22s ease,
+    background 0.15s ease,
+    padding 0.15s ease;
+}
+
+/* Active: label floats up to sit ON the input's top border */
+.input:focus + .floatLabel,
+.input:not(:placeholder-shown) + .floatLabel {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 0.72rem;
+  color: #1a2d5a;
+  letter-spacing: 0.4px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0 4px;
+  z-index: 1;
+}
+
+/* Error label colour */
+.hasError .floatLabel {
+  color: #d32f2f;
+}
+
+.hasError .input:focus + .floatLabel,
+.hasError .input:not(:placeholder-shown) + .floatLabel {
+  color: #d32f2f;
+}
+
+/* ── Eye toggle ───────────────────────────────────────── */
+.eyeBtn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9aaac8;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  transition: color 0.2s;
+}
+
+.eyeBtn:hover {
+  color: #1a2d5a;
+}
+
+/* ── Inline error message ─────────────────────────────── */
+.errorMsg {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  color: #d32f2f;
+  padding-left: 4px;
+  animation: fadeIn 0.18s ease;
+}
+
+.errorMsg::before {
+  content: '!';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  background: #d32f2f;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Submit button ───────────────────────────────────── */
+.submitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 15px;
+  margin-top: 6px;
+  background: linear-gradient(135deg, #1a2d5a 0%, #2e5099 100%);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(26, 45, 90, 0.35);
+  transition:
+    box-shadow 0.25s,
+    transform 0.15s;
+}
+
+.submitBtn:hover {
+  box-shadow: 0 6px 28px rgba(26, 45, 90, 0.48);
+  transform: translateY(-1px);
+}
+
+.submitBtn:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 10px rgba(26, 45, 90, 0.3);
+}
+
+/* ── Switch link ────────────────────────────────────── */
+.switchText {
+  font-size: 0.85rem;
+  color: #6b7a99;
+  text-align: center;
+  margin-top: 4px;
+}
+
+.switchLink {
+  color: #1a2d5a;
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1.5px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.switchLink:hover {
+  border-color: #1a2d5a;
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .imagePanel {
+    display: none;
+  }
+
+  .formCard {
+    padding: 40px 28px;
+  }
+}
+
+@media (max-width: 400px) {
+  .formCard {
+    padding: 32px 20px;
+    border-radius: 16px;
+  }
+}
