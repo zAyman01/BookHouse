@@ -50,7 +50,7 @@ app.use(
     max: 100,
     standardHeaders: true,
     legacyHeaders: false,
-    message: 'Too many requests from this IP, please try again later.',
+    message: 'Too many requests, please try again later.',
   })
 );
 
@@ -67,8 +67,10 @@ app.use(
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-// ─── Static Files (uploaded books & covers) ───────────────────────────────────
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// ─── Static Files ─────────────────────────────────────────────────────────────
+// Covers are public (shown in listings/detail pages)
+app.use('/uploads/covers', express.static(path.join(__dirname, 'uploads/covers')));
+// Book files are NOT served statically — protected via GET /api/books/:id/read
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 app.get('/health', (req, res) => {

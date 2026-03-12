@@ -41,13 +41,6 @@ const userSchema = new mongoose.Schema(
         ref: 'Book',
       },
     ],
-    // Books published by this user (author / admin only)
-    publishedBooks: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Book',
-      },
-    ],
     isActive: {
       type: Boolean,
       default: true,

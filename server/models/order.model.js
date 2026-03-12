@@ -10,8 +10,16 @@ const orderSchema = new mongoose.Schema(
     },
     books: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Book',
+        book: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Book',
+          required: true,
+        },
+        priceAtPurchase: {
+          type: Number,
+          required: true,
+          min: 0,
+        },
       },
     ],
     totalPrice: {
