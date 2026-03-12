@@ -1,0 +1,398 @@
+{
+  "info": {
+    "name": "BookHouse API",
+    "_postman_id": "bookhouse-api-collection",
+    "description": "BookHouse API Collection. Run Login first — token is auto-saved to {{token}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000", "type": "string" },
+    { "key": "token",   "value": "",                      "type": "string" },
+    { "key": "bookId",  "value": "",                      "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register - Success (user)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"user@test.com\",\n  \"password\": \"password123\",\n  \"role\": \"user\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Register - Success (author)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test Author\",\n  \"email\": \"author@test.com\",\n  \"password\": \"password123\",\n  \"role\": \"author\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Register - Duplicate email",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"user@test.com\",\n  \"password\": \"password123\",\n  \"role\": \"user\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Register - Short password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"short@test.com\",\n  \"password\": \"123\",\n  \"role\": \"user\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Register - Admin role blocked",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Hacker\",\n  \"email\": \"admin@test.com\",\n  \"password\": \"password123\",\n  \"role\": \"admin\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Register - Missing fields",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test User\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Login - Success (saves token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.token) {",
+                  "  pm.collectionVariables.set('token', res.data.token);",
+                  "  console.log('Token saved');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"author@test.com\",\n  \"password\": \"password123\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Login - Wrong password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@test.com\",\n  \"password\": \"wrongpassword\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Login - Wrong email",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"notexist@test.com\",\n  \"password\": \"password123\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Get Me - Valid token",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api","auth","me"] }
+          }
+        },
+        {
+          "name": "Get Me - No token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api","auth","me"] }
+          }
+        },
+        {
+          "name": "Get Me - Invalid token",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer invalidtokenhere" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api","auth","me"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.collectionVariables.set('token', '');"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/logout", "host": ["{{baseUrl}}"], "path": ["api","auth","logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Books",
+      "item": [
+        {
+          "name": "Get All Books",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/books", "host": ["{{baseUrl}}"], "path": ["api","books"] },
+            "description": "Public. Returns only published books. No token needed."
+          }
+        },
+        {
+          "name": "Get All Books - Search",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/books?search=harry&sort=rating&page=1&limit=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","books"],
+              "query": [
+                { "key": "search", "value": "harry" },
+                { "key": "sort",   "value": "rating" },
+                { "key": "page",   "value": "1" },
+                { "key": "limit",  "value": "5" }
+              ]
+            },
+            "description": "Text search across title, authorName, description. Sorted by relevance."
+          }
+        },
+        {
+          "name": "Get All Books - Filter by genre & price",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/books?genre=Fiction&minPrice=5&maxPrice=50&sort=price_asc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","books"],
+              "query": [
+                { "key": "genre",     "value": "Fiction" },
+                { "key": "minPrice",  "value": "5" },
+                { "key": "maxPrice",  "value": "50" },
+                { "key": "sort",      "value": "price_asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Book By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.book) {",
+                  "  pm.collectionVariables.set('bookId', res.data.book._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api","books","{{bookId}}"] },
+            "description": "Public. Set {{bookId}} variable first or replace with a real ID."
+          }
+        },
+        {
+          "name": "Get Book By ID - Draft (expect 404)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api","books","{{bookId}}"] },
+            "description": "If bookId is a draft (isPublished:false), returns 404."
+          }
+        },
+        {
+          "name": "Create Book - Success (author/admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.book) {",
+                  "  pm.collectionVariables.set('bookId', res.data.book._id);",
+                  "  console.log('bookId saved:', res.data.book._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/books", "host": ["{{baseUrl}}"], "path": ["api","books"] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "title",       "value": "My Test Book",       "type": "text" },
+                { "key": "description", "value": "A book about testing APIs in depth", "type": "text" },
+                { "key": "price",       "value": "19.99",              "type": "text" },
+                { "key": "genre",       "value": "Technology",         "type": "text" },
+                { "key": "category",    "value": "Programming",        "type": "text" },
+                { "key": "isPublished", "value": "true",               "type": "text" },
+                { "key": "coverImage",  "type": "file", "src": "" },
+                { "key": "bookFile",    "type": "file", "src": "" }
+              ]
+            },
+            "description": "Form-data (multipart). Login as author first. coverImage and bookFile are optional."
+          }
+        },
+        {
+          "name": "Create Book - No body (expect 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization",  "value": "Bearer {{token}}" },
+              { "key": "Content-Type",   "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/books", "host": ["{{baseUrl}}"], "path": ["api","books"] },
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } },
+            "description": "Empty body — Joi returns 400 with validation errors."
+          }
+        },
+        {
+          "name": "Create Book - User role (expect 403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/books", "host": ["{{baseUrl}}"], "path": ["api","books"] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Unauthorized\",\n  \"description\": \"Should not be created\",\n  \"price\": 10\n}", "options": { "raw": { "language": "json" } } },
+            "description": "Login as a user-role account first. authorize middleware returns 403."
+          }
+        },
+        {
+          "name": "Update Book - Success",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api","books","{{bookId}}"] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "price",       "value": "24.99", "type": "text" },
+                { "key": "isPublished", "value": "true",  "type": "text" }
+              ]
+            },
+            "description": "Update own book. Only the author or admin can update. Must send at least one field."
+          }
+        },
+        {
+          "name": "Update Book - Empty body (expect 400)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api","books","{{bookId}}"] },
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } },
+            "description": "Empty body — updateBookSchema.min(1) returns 400."
+          }
+        },
+        {
+          "name": "Update Book - Wrong owner (expect 403)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api","books","{{bookId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"price\": 1\n}", "options": { "raw": { "language": "json" } } },
+            "description": "Login as a different user than the book's author. Returns 403."
+          }
+        },
+        {
+          "name": "Read Book File - No purchase (expect 403)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}/read", "host": ["{{baseUrl}}"], "path": ["api","books","{{bookId}}","read"] },
+            "description": "User has not purchased this book. Service checks user.library and returns 403."
+          }
+        },
+        {
+          "name": "Read Book File - No token (expect 401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}/read", "host": ["{{baseUrl}}"], "path": ["api","books","{{bookId}}","read"] },
+            "description": "protect middleware returns 401 — no auth header."
+          }
+        },
+        {
+          "name": "Delete Book - Success",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api","books","{{bookId}}"] },
+            "description": "Only the book's author or admin can delete."
+          }
+        },
+        {
+          "name": "Delete Book - Wrong owner (expect 403)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api","books","{{bookId}}"] },
+            "description": "Login as a different user. Returns 403."
+          }
+        },
+        {
+          "name": "Delete Book - No token (expect 401)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api","books","{{bookId}}"] }
+          }
+        }
+      ]
+    }
+  ]
+}

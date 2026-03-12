@@ -46,7 +46,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   // Development: show full stack trace
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'dev') {
     return res.status(error.statusCode).json({
       success: false,
       message: error.message,

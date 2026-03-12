@@ -1,35 +1,53 @@
 import { Router } from 'express';
 import protect from '../middleware/protect.middleware.js';
 import authorize from '../middleware/authorize.middleware.js';
+import validate from '../middleware/validate.middleware.js';
 import { ROLES } from '../config/constants.config.js';
+import { uploadBookFiles } from '../utils/uploadMiddleware.util.js';
+import { createBookSchema, updateBookSchema } from '../validators/book.validator.js';
+import * as bookController from '../controllers/book.controller.js';
 
 const router = Router();
 
-/**
- * Book Routes — /api/books
- *
- * Endpoints to implement:
- *   GET    /api/books             → Get all published books (public, with search/filter/pagination)
- *   GET    /api/books/:id         → Get single book details (public)
- *   POST   /api/books             → Create/publish a book [protect, authorize(AUTHOR, ADMIN)]
- *   PUT    /api/books/:id         → Update book [protect, authorize(AUTHOR, ADMIN)]
- *   DELETE /api/books/:id         → Delete book [protect, authorize(AUTHOR, ADMIN)]
- *
- * File uploads: use uploadMiddleware (multer) for coverImage + fileUrl
- *
- * Controller file to create: controllers/bookController.js
- * Service file to create:    services/bookService.js
- * Validator file to create:  validators/bookValidator.js
- * Upload middleware:          utils/uploadMiddleware.js
- */
+// ─── Public ───────────────────────────────────────────────────────────────────
+// GET /api/books?search=&genre=&category=&minPrice=&maxPrice=&sort=&page=&limit=
+router.get('/', bookController.getAllBooksHandler);
 
-// TODO: import bookController from '../controllers/bookController.js';
-// TODO: import { uploadCoverImage, uploadBookFile } from '../utils/uploadMiddleware.js';
+// ⚠️  /:id/read must be before /:id — otherwise Express captures "read" as the :id param
+// GET /api/books/:id/read — streams book file, only for users who purchased it
+router.get('/:id/read', protect, bookController.readBook);
 
-// router.get('/', bookController.getAllBooks);
-// router.get('/:id', bookController.getBook);
-// router.post('/', protect, authorize(ROLES.AUTHOR, ROLES.ADMIN), uploadCoverImage, uploadBookFile, bookController.createBook);
-// router.put('/:id', protect, authorize(ROLES.AUTHOR, ROLES.ADMIN), bookController.updateBook);
-// router.delete('/:id', protect, authorize(ROLES.AUTHOR, ROLES.ADMIN), bookController.deleteBook);
+// GET /api/books/:id
+router.get('/:id', bookController.getBook);
+
+// ─── Author / Admin only ──────────────────────────────────────────────────────
+// POST /api/books
+// uploadBookFiles runs before validate — multer must parse multipart body first
+router.post(
+  '/',
+  protect,
+  authorize(ROLES.AUTHOR, ROLES.ADMIN),
+  uploadBookFiles,
+  validate(createBookSchema),
+  bookController.createBookHandler
+);
+
+// PUT /api/books/:id
+router.put(
+  '/:id',
+  protect,
+  authorize(ROLES.AUTHOR, ROLES.ADMIN),
+  uploadBookFiles,
+  validate(updateBookSchema),
+  bookController.updateBookHandler
+);
+
+// DELETE /api/books/:id
+router.delete(
+  '/:id',
+  protect,
+  authorize(ROLES.AUTHOR, ROLES.ADMIN),
+  bookController.deleteBookHandler
+);
 
 export default router;
