@@ -1,10 +1,13 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
 import Book from '../models/book.model.js';
+import User from '../models/user.model.js';
+import Report from '../models/report.model.js';
 import AppError from '../utils/appError.util.js';
 import paginate from '../helpers/paginate.helper.js';
-import { ROLES } from '../config/constants.config.js';
-
+import { ROLES, REPORT_TYPE } from '../config/constants.config.js';
+import * as reviewService from './review.service.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
@@ -49,7 +52,8 @@ export const getAllBooks = async (query) => {
       .skip(skip)
       .limit(limit)
       .populate('author', 'name')
-      .select('-fileUrl'), // fileUrl is internal — never expose the disk path in listings
+      .select('-fileUrl')
+      .lean(), // lean() strips mongoose overhead for strict read performance
     Book.countDocuments(filter),
   ]);
 
@@ -64,8 +68,9 @@ export const getAllBooks = async (query) => {
 // ─── Get Single Book ──────────────────────────────────────────────────────────
 export const getBookById = async (id) => {
   const book = await Book.findById(id)
-    .populate('author', 'name email')
-    .select('-fileUrl'); // file path never returned — served via /api/books/:id/read
+    .populate('author', 'name')
+    .select('-fileUrl')
+    .lean(); // Faster parsing on GET
 
   // Return the same 404 for missing AND unpublished — don't reveal draft existence
   if (!book || !book.isPublished) throw new AppError('Book not found', 404);
@@ -114,21 +119,53 @@ export const updateBook = async (id, data, files, requestingUser) => {
 
 // ─── Delete Book ──────────────────────────────────────────────────────────────
 export const deleteBook = async (id, requestingUser) => {
-  const book = await Book.findById(id);
-  if (!book) throw new AppError('Book not found', 404);
+  const session = await mongoose.startSession();
 
-  const isOwner = book.author.toString() === requestingUser._id.toString();
-  const isAdmin = requestingUser.role === ROLES.ADMIN;
-  if (!isOwner && !isAdmin) throw new AppError('You are not authorized to delete this book', 403);
+  try {
+    await session.withTransaction(async () => {
+      const book = await Book.findById(id).session(session);
+      if (!book) throw new AppError('Book not found', 404);
 
-  // Use instance method so future pre/post hooks (e.g. cascade delete reviews) work
-  await book.deleteOne();
+      const isOwner = book.author.toString() === requestingUser._id.toString();
+      const isAdmin = requestingUser.role === ROLES.ADMIN;
+      if (!isOwner && !isAdmin) {
+        throw new AppError('You are not authorized to delete this book', 403);
+      }
+
+      // Remove all reviews for this book
+      await reviewService.deleteReviewsByBookId(book._id, { session });
+
+      // Remove book references from all users (favorites + purchased library)
+      await User.updateMany(
+        {
+          $or: [{ favorites: book._id }, { library: book._id }],
+        },
+        {
+          $pull: {
+            favorites: book._id,
+            library: book._id,
+          },
+        },
+        { session }
+      );
+
+      // Remove reports targeting this book only
+      await Report.deleteMany(
+        { targetId: book._id, type: REPORT_TYPE.BOOK },
+        { session }
+      );
+
+      await book.deleteOne({ session });
+    });
+  } finally {
+    session.endSession();
+  }
 };
 
 // ─── Get Book File Path (for protected read endpoint) ─────────────────────────
 export const getBookFilePath = async (id, requestingUser) => {
-  // Need fileUrl here — use explicit select to bring it back (it's excluded by default in other queries)
-  const book = await Book.findById(id).select('+fileUrl');
+  // Fetch only what this endpoint needs.
+  const book = await Book.findById(id).select('fileUrl isPublished');
   if (!book || !book.isPublished) throw new AppError('Book not found', 404);
 
   // Must have purchased the book — library contains flat ObjectIds

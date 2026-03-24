@@ -28,6 +28,8 @@ const reviewSchema = new mongoose.Schema(
 
 // One review per user per book
 reviewSchema.index({ userId: 1, bookId: 1 }, { unique: true });
+// Optimize fetching reviews for a book sorted by creation date
+reviewSchema.index({ bookId: 1, createdAt: -1 });
 
 const Review = mongoose.model('Review', reviewSchema);
 export default Review;
