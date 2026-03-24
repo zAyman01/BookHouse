@@ -67,6 +67,7 @@ bookSchema.index({ genre: 1 });                           // filter by genre
 bookSchema.index({ category: 1 });                        // filter by category
 bookSchema.index({ price: 1 });                           // sort/filter by price
 bookSchema.index({ isPublished: 1 });                     // published books only
+bookSchema.index({ isPublished: 1, createdAt: -1 });      // common list query
 bookSchema.index({ ratingsAverage: -1 });                 // top-rated books
 
 const Book = mongoose.model('Book', bookSchema);

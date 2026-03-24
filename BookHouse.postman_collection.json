@@ -8,7 +8,10 @@
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:5000", "type": "string" },
     { "key": "token",   "value": "",                      "type": "string" },
-    { "key": "bookId",  "value": "",                      "type": "string" }
+    { "key": "bookId",  "value": "",                      "type": "string" },
+    { "key": "reviewId", "value": "",                     "type": "string" },
+    { "key": "couponId", "value": "",                     "type": "string" },
+    { "key": "couponCode", "value": "SAVE20",             "type": "string" }
   ],
   "item": [
     {
@@ -390,6 +393,133 @@
             "method": "DELETE",
             "header": [],
             "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api","books","{{bookId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Get Book Reviews",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/reviews/book/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api","reviews","book","{{bookId}}"] },
+            "description": "Public. Returns paginated reviews for a published book."
+          }
+        },
+        {
+          "name": "Create Review - Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.review && res.data.review._id) {",
+                  "  pm.collectionVariables.set('reviewId', res.data.review._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/reviews/book/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api","reviews","book","{{bookId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Excellent read\"\n}", "options": { "raw": { "language": "json" } } },
+            "description": "Requires purchased book in user library."
+          }
+        },
+        {
+          "name": "Update Review - Success",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/reviews/{{reviewId}}", "host": ["{{baseUrl}}"], "path": ["api","reviews","{{reviewId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Updated review comment\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Delete Review - Success",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/reviews/{{reviewId}}", "host": ["{{baseUrl}}"], "path": ["api","reviews","{{reviewId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Coupons",
+      "item": [
+        {
+          "name": "Create Coupon - Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.coupon) {",
+                  "  pm.collectionVariables.set('couponId', res.data.coupon._id);",
+                  "  pm.collectionVariables.set('couponCode', res.data.coupon.code);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/coupons", "host": ["{{baseUrl}}"], "path": ["api","coupons"] },
+            "body": { "mode": "raw", "raw": "{\n  \"code\": \"SAVE20\",\n  \"discountPercent\": 20,\n  \"expiresAt\": \"2030-12-31T23:59:59.000Z\",\n  \"usageLimit\": 10,\n  \"isActive\": true\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Get All Coupons - Admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/coupons", "host": ["{{baseUrl}}"], "path": ["api","coupons"] }
+          }
+        },
+        {
+          "name": "Validate Coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/coupons/validate", "host": ["{{baseUrl}}"], "path": ["api","coupons","validate"] },
+            "body": { "mode": "raw", "raw": "{\n  \"code\": \"{{couponCode}}\"\n}", "options": { "raw": { "language": "json" } } },
+            "description": "Validation does not increment usedCount."
+          }
+        },
+        {
+          "name": "Delete Coupon - Admin",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/coupons/{{couponId}}", "host": ["{{baseUrl}}"], "path": ["api","coupons","{{couponId}}"] }
           }
         }
       ]
