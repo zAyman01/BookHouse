@@ -1,3 +1,11 @@
-// Add your controller functions here
-// Example: bookController.js, authController.js, userController.js, etc.
-// Controllers handle the business logic for your routes
+# controllers/
+
+# - Receive HTTP req/res
+
+# - Call the appropriate service method
+
+# - Send back a standardized JSON response
+
+# - NO business logic here
+
+# Example files: authController.js, bookController.js, orderController.js

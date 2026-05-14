@@ -1,3 +1,15 @@
-// Add your Mongoose models here
-// Example: Book.js, User.js, Order.js, etc.
-// Models define the structure of your database documents
+# models/
+
+# - Mongoose schema and model definitions
+
+# - Define the shape of data stored in MongoDB
+
+# Example files:
+
+# User.js → name, email, password, role, createdAt
+
+# Book.js → title, author, price, category, stock, cover
+
+# Order.js → user, items, total, status, createdAt
+
+# Review.js → user, book, rating, comment

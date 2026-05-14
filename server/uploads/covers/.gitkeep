@@ -1,0 +1,7 @@
+# uploads/covers/
+
+# Uploaded book cover images are stored here by Multer.
+
+# Served as static files at: GET /uploads/covers/<filename>
+
+# To swap to cloud storage (Cloudinary/S3), update utils/uploadMiddleware.js only.

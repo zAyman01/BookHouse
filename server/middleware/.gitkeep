@@ -1,3 +1,15 @@
-// Add your middleware functions here
-// Example: authMiddleware.js, errorHandler.js, validation.js, etc.
-// Middleware functions process requests before they reach the controllers
+# middleware/
+
+# - Functions that run between the request and the controller
+
+# Example files:
+
+# protect.js → Verify JWT and attach req.user
+
+# authorize.js → Role-based access control (admin, user)
+
+# validate.js → Run validation schema and return 400 on failure
+
+# errorHandler.js → Global error handler (last middleware in chain)
+
+# notFound.js → 404 handler for undefined routes
