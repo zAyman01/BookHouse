@@ -1,0 +1,13 @@
+# validators/
+
+# - Input validation schemas for incoming requests
+
+# - Used in middleware before reaching the controller
+
+# Example files:
+
+# authValidator.js → register: {name, email, password}, login: {email, password}
+
+# bookValidator.js → create/update: {title, author, price, category, stock}
+
+# orderValidator.js → place: {items: [{bookId, quantity}]}

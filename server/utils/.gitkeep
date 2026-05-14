@@ -1,2 +1,13 @@
-// Add your utility/helper functions here
-// Example: helpers.js, validators.js, emailService.js, etc.
+# utils/
+
+# - Shared utility classes and functions used across all layers
+
+# Example files:
+
+# AppError.js → Custom error class with statusCode and message
+
+# ApiResponse.js → Standardized success response { success, data, message }
+
+# generateToken.js → Sign and return a JWT token
+
+# catchAsync.js → Wrap async route handlers to avoid try/catch repetition
