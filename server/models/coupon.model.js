@@ -50,5 +50,8 @@ couponSchema.statics.validateCoupon = async function (code) {
   return coupon;
 };
 
+// Index for getting all coupons
+couponSchema.index({ createdAt: -1 });
+
 const Coupon = mongoose.model('Coupon', couponSchema);
 export default Coupon;

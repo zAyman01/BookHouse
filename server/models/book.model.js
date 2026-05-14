@@ -29,6 +29,10 @@ const bookSchema = new mongoose.Schema(
       ref: 'User',
       required: [true, 'Author is required'],
     },
+    authorName: {
+      type: String,     // snapshot of author's name at publish time — enables text search by author
+      trim: true,
+    },
     genre: {
       type: String,
       trim: true,
@@ -37,12 +41,6 @@ const bookSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    reviews: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Review',
-      },
-    ],
     ratingsAverage: {
       type: Number,
       default: 0,
@@ -63,12 +61,13 @@ const bookSchema = new mongoose.Schema(
 );
 
 // Indexes for common queries
-bookSchema.index({ title: 'text', description: 'text' }); // full-text search
+bookSchema.index({ title: 'text', authorName: 'text', description: 'text' }); // full-text search (title + author name + description)
 bookSchema.index({ author: 1 });                          // books by author
 bookSchema.index({ genre: 1 });                           // filter by genre
 bookSchema.index({ category: 1 });                        // filter by category
 bookSchema.index({ price: 1 });                           // sort/filter by price
 bookSchema.index({ isPublished: 1 });                     // published books only
+bookSchema.index({ isPublished: 1, createdAt: -1 });      // common list query
 bookSchema.index({ ratingsAverage: -1 });                 // top-rated books
 
 const Book = mongoose.model('Book', bookSchema);
