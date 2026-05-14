@@ -1,0 +1,162 @@
+.favoritesPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Notification */
+.notification {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background-color: #0a1e54;
+  color: #fff;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Hero Section */
+.heroSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 40px 20px;
+  background: linear-gradient(180deg, #f9f0ee 0%, #e2d4cb 32.76%, #b39a84 100%);
+}
+
+.heroImg {
+  width: 500px;
+  max-width: 100%;
+  height: auto;
+  margin-right: 40px;
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  width: 400px;
+  max-width: 100%;
+  padding: 40px;
+}
+
+.heroTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-style: italic;
+  font-weight: 400;
+  color: #0a1e54;
+  line-height: 50px;
+  letter-spacing: 0%;
+  margin: 0;
+}
+
+.heroText {
+  font-size: 16px;
+  font-style: italic;
+  color: #fff;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.heroBtn {
+  background-color: #0a1e54;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 24px;
+  font-size: 16px;
+  font-weight: 300;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.heroBtn:hover {
+  background-color: #0a1e54cc;
+  transform: translateY(-2px);
+}
+
+.heroBtn:active {
+  transform: translateY(0);
+}
+
+.heroBtn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Favorites List */
+.favoritesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+  margin: 40px 0;
+  padding: 20px;
+  width: 100%;
+  max-width: 1400px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .heroSection {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .heroImg {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+
+  .heroContent {
+    align-items: center;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 24px;
+    line-height: 36px;
+  }
+
+  .heroText {
+    font-size: 14px;
+  }
+
+  .heroImg {
+    width: 300px;
+  }
+
+  .favoritesList {
+    gap: 16px;
+    margin: 20px 0;
+    padding: 10px;
+  }
+
+  .notification {
+    top: 60px;
+    right: 10px;
+    left: 10px;
+    text-align: center;
+  }
+}

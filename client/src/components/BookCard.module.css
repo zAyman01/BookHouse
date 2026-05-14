@@ -1,0 +1,113 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 400px;
+  border: 2px solid #b39a84;
+  padding: 16px;
+  background-color: #f9f0ee;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.bookImg {
+  width: 75%;
+  height: 400px;
+  align-self: center;
+  border-radius: 20px;
+  object-fit: cover;
+}
+
+.bookTitle {
+  font-family: 'Noto Sans Arabic', sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  color: #0a1e54;
+  line-height: 30px;
+  letter-spacing: 0%;
+  margin-top: 16px;
+}
+
+.bookAuthor {
+  font-family: 'Noto Sans Arabic', sans-serif;
+  font-size: 14px;
+  color: #0a1e54;
+  font-weight: 400;
+  margin: 0;
+}
+
+.bookRating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ratingStars {
+  font-size: 20px;
+  color: #0a1e54;
+  font-weight: 600;
+}
+
+.ratingCount {
+  font-size: 14px;
+  color: #0a1e54;
+  font-weight: 400;
+}
+
+.bookBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.bookPrice {
+  font-family: 'Inter', sans-serif;
+  font-size: 24px;
+  font-style: italic;
+  color: #0a1e54;
+  font-weight: 400;
+  margin: 0;
+}
+
+.cartIcon {
+  margin-right: 8px;
+}
+
+.buyBtn {
+  color: #0a1e54;
+  background-color: transparent;
+  border: 1px solid #b39a84;
+  border-radius: 20px;
+  padding: 8px 24px;
+  font-size: 16px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.buyBtn:hover {
+  background-color: #b39a84;
+  color: #fff;
+}
+
+.buyBtn:active {
+  transform: scale(0.98);
+}
+
+.buyBtn:focus-visible {
+  outline: 2px solid #0a1e54;
+  outline-offset: 2px;
+}
