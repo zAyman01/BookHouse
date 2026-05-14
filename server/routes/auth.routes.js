@@ -1,29 +1,21 @@
 import { Router } from 'express';
 import protect from '../middleware/protect.middleware.js';
+import validate from '../middleware/validate.middleware.js';
+import { registerSchema, loginSchema } from '../validators/auth.validator.js';
+import * as authController from '../controllers/auth.controller.js';
 
 const router = Router();
 
-/**
- * Auth Routes — /api/auth
- *
- * Endpoints to implement:
- *   POST   /api/auth/register   → Register a new user
- *   POST   /api/auth/login      → Login and receive JWT
- *   GET    /api/auth/me         → Get current logged-in user [protect]
- *   POST   /api/auth/logout     → Logout (client-side token removal)
- *
- * Controller file to create: controllers/authController.js
- * Service file to create:    services/authService.js
- * Validator file to create:  validators/authValidator.js
- */
+// POST /api/auth/register — create new account (user or author only)
+router.post('/register', validate(registerSchema), authController.register);
 
-// TODO: import authController from '../controllers/authController.js';
-// TODO: import { validate } from '../middleware/validate.js';
-// TODO: import { registerSchema, loginSchema } from '../validators/authValidator.js';
+// POST /api/auth/login — receive JWT token
+router.post('/login', validate(loginSchema), authController.login);
 
-// router.post('/register', validate(registerSchema), authController.register);
-// router.post('/login', validate(loginSchema), authController.login);
-// router.get('/me', protect, authController.getMe);
-// router.post('/logout', protect, authController.logout);
+// GET /api/auth/me — get own profile (requires valid token)
+router.get('/me', protect, authController.getMe);
+
+// POST /api/auth/logout — client-side logout signal
+router.post('/logout', protect, authController.logout);
 
 export default router;
