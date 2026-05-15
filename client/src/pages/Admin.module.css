@@ -1,0 +1,58 @@
+.main { max-width: 1100px; margin: 0 auto; padding: var(--space-6) var(--space-3); min-height: 60vh; }
+
+.title { font-family: var(--font-display); font-size: 28px; font-weight: 600; color: var(--color-text); margin-bottom: var(--space-3); letter-spacing: -0.02em; }
+
+.loading { font-family: var(--font-body); color: var(--color-text-secondary); padding: var(--space-6) 0; }
+.empty { font-family: var(--font-body); color: var(--color-text-muted); font-style: italic; }
+
+.tabs { display: flex; gap: 4px; margin-bottom: var(--space-4); border-bottom: 1px solid var(--color-border-light); }
+
+.tab { padding: 8px 20px; border: none; background: none; font-family: var(--font-ui); font-size: 13px; font-weight: 500; color: var(--color-text-secondary); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all var(--transition); }
+
+.tab:hover { color: var(--color-text); }
+.tabActive { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+
+.sectionTitle { font-family: var(--font-heading); font-size: 18px; font-weight: 600; color: var(--color-text); margin-bottom: var(--space-3); }
+
+.wrapper { overflow-x: auto; border: 1px solid var(--color-border-light); border-radius: var(--radius-md); }
+
+.table { width: 100%; border-collapse: collapse; background: var(--color-surface); }
+
+.table th, .table td { text-align: left; padding: 10px 14px; font-size: 13px; border-bottom: 1px solid var(--color-border-light); font-family: var(--font-ui); color: var(--color-text-secondary); }
+
+.table th { background: var(--color-bg); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-muted); }
+
+.table tr:last-child td { border-bottom: none; }
+
+.badge { display: inline-block; padding: 2px 8px; background: var(--color-bg); border-radius: var(--radius-full); font-size: 11px; font-weight: 500; color: var(--color-text-secondary); text-transform: capitalize; }
+
+.active { color: var(--color-green); font-weight: 500; }
+.inactive { color: var(--color-text-muted); font-weight: 500; }
+
+.code { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--color-primary); }
+.price { font-weight: 600; color: var(--color-text); }
+.date { font-size: 12px; color: var(--color-text-muted); }
+.muted { color: var(--color-text-muted); }
+
+.statusBadge { display: inline-block; padding: 2px 8px; border-radius: var(--radius-full); font-size: 11px; font-weight: 500; }
+.pending { background: color-mix(in srgb, var(--color-accent) 12%, transparent); color: var(--color-accent); }
+.reviewed { background: color-mix(in srgb, var(--color-green) 10%, transparent); color: var(--color-green); }
+.dismissed { background: color-mix(in srgb, var(--color-red) 6%, transparent); color: var(--color-red); }
+
+.danger { padding: 4px 10px; background: color-mix(in srgb, var(--color-red) 6%, transparent); color: var(--color-red); border: 1px solid color-mix(in srgb, var(--color-red) 15%, transparent); border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font-ui); font-size: 11px; transition: background var(--transition); }
+
+.danger:hover { background: color-mix(in srgb, var(--color-red) 10%, transparent); }
+
+.actionBtn { padding: 4px 10px; background: color-mix(in srgb, var(--color-green) 8%, transparent); color: var(--color-green); border: 1px solid color-mix(in srgb, var(--color-green) 20%, transparent); border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font-ui); font-size: 11px; margin-right: 4px; transition: background var(--transition); }
+
+.actionBtn:hover { background: color-mix(in srgb, var(--color-green) 15%, transparent); }
+
+.form { display: flex; gap: 8px; margin-bottom: var(--space-3); flex-wrap: wrap; }
+
+.form input { padding: 8px 12px; border: 1.5px solid var(--color-border); border-radius: var(--radius-sm); font-family: var(--font-ui); font-size: 13px; color: var(--color-text); background: var(--color-bg); outline: none; }
+
+.form input:focus { border-color: var(--color-primary); }
+
+.form button { padding: 8px 14px; background: var(--color-primary); color: #fff; border: none; border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font-ui); font-size: 13px; font-weight: 500; transition: background var(--transition); }
+
+.form button:hover { background: var(--color-primary-light); }

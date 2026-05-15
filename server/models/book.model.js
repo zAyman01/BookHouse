@@ -41,6 +41,11 @@ const bookSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    format: {
+      type: String,
+      enum: ['hardcover', 'paperback', 'e-book', 'audiobook'],
+      default: 'hardcover',
+    },
     ratingsAverage: {
       type: Number,
       default: 0,
@@ -67,6 +72,7 @@ bookSchema.index({ genre: 1 });                           // filter by genre
 bookSchema.index({ category: 1 });                        // filter by category
 bookSchema.index({ price: 1 });                           // sort/filter by price
 bookSchema.index({ isPublished: 1 });                     // published books only
+bookSchema.index({ format: 1 });                          // filter by format
 bookSchema.index({ isPublished: 1, createdAt: -1 });      // common list query
 bookSchema.index({ ratingsAverage: -1 });                 // top-rated books
 

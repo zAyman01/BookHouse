@@ -25,6 +25,8 @@ export const getAllBooks = async (query) => {
 
   if (query.genre)    filter.genre    = query.genre;
   if (query.category) filter.category = query.category;
+  if (query.format)   filter.format   = query.format;
+  if (query.author)   filter.author   = query.author;
 
   // Price range — both bounds are optional
   if (query.minPrice || query.maxPrice) {
@@ -63,6 +65,17 @@ export const getAllBooks = async (query) => {
     totalPages: Math.ceil(total / limit),
     currentPage,
   };
+};
+
+// ─── Get My Books (author's own — including unpublished) ─────────────────────
+export const getBooksByAuthor = async (authorId) => {
+  const books = await Book.find({ author: authorId })
+    .select('-fileUrl')
+    .populate('author', 'name')
+    .sort({ createdAt: -1 })
+    .lean();
+
+  return books;
 };
 
 // ─── Get Single Book ──────────────────────────────────────────────────────────

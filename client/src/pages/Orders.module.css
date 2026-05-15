@@ -1,0 +1,31 @@
+.main { max-width: 800px; margin: 0 auto; padding: var(--space-6) var(--space-3); min-height: 60vh; background: var(--color-bg); }
+
+.title { font-family: var(--font-display); font-size: 28px; font-weight: 600; color: var(--color-text); margin-bottom: var(--space-4); letter-spacing: -0.02em; }
+
+.muted { text-align: center; color: var(--color-text-muted); padding: var(--space-6); font-family: var(--font-body); }
+
+.empty { text-align: center; color: var(--color-text-muted); padding: 80px 20px; font-family: var(--font-body); }
+
+.list { display: flex; flex-direction: column; gap: var(--space-2); }
+
+.order { background: var(--color-surface); border: 1px solid var(--color-border-light); border-radius: var(--radius-md); padding: var(--space-3); }
+
+.head { display: flex; justify-content: space-between; align-items: center; padding-bottom: var(--space-2); border-bottom: 1px solid var(--color-border-light); margin-bottom: var(--space-2); }
+
+.date { font-family: var(--font-ui); font-size: 13px; color: var(--color-text-secondary); }
+
+.status { font-family: var(--font-ui); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 10px; border-radius: var(--radius-full); background: color-mix(in srgb, var(--color-accent) 12%, transparent); color: var(--color-accent); font-weight: 500; }
+
+.delivered { background: color-mix(in srgb, var(--color-green) 10%, transparent); color: var(--color-green); }
+.shipped { background: color-mix(in srgb, var(--color-blue) 10%, transparent); color: var(--color-blue); }
+
+.total { font-family: var(--font-ui); font-weight: 700; color: var(--color-text); font-size: 15px; }
+
+.books { display: flex; flex-direction: column; gap: 6px; }
+
+.bookItem { display: flex; justify-content: space-between; font-size: 13px; font-family: var(--font-ui); }
+
+.bookTitle { color: var(--color-text); }
+.bookPrice { color: var(--color-text-secondary); font-weight: 500; }
+
+.coupon { font-family: var(--font-ui); font-size: 12px; color: var(--color-green); margin-top: var(--space-2); padding-top: 8px; border-top: 1px dashed var(--color-border); }

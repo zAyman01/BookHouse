@@ -3,10 +3,10 @@ import ApiResponse from '../utils/apiResponse.util.js';
 import { registerUser, loginUser } from '../services/auth.service.js';
 
 // ─── POST /api/auth/register ──────────────────────────────────────────────────
-// Returns user only — no token. Frontend redirects to /login after register.
+// Returns user + token so the frontend can log the user in immediately.
 export const register = catchAsync(async (req, res) => {
-  const { user } = await registerUser(req.body);
-  ApiResponse.success(res, { user }, 'Registered successfully. Please log in.', 201);
+  const { user, token } = await registerUser(req.body);
+  ApiResponse.success(res, { user, token }, 'Registered successfully.', 201);
 });
 
 // ─── POST /api/auth/login ─────────────────────────────────────────────────────

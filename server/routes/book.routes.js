@@ -13,6 +13,9 @@ const router = Router();
 // GET /api/books?search=&genre=&category=&minPrice=&maxPrice=&sort=&page=&limit=
 router.get('/', bookController.getAllBooksHandler);
 
+// GET /api/books/my — get own books (author) — must be before /:id
+router.get('/my', protect, authorize(ROLES.AUTHOR, ROLES.ADMIN), bookController.getMyBooks);
+
 // ⚠️  /:id/read must be before /:id — otherwise Express captures "read" as the :id param
 // GET /api/books/:id/read — streams book file, only for users who purchased it
 router.get('/:id/read', protect, bookController.readBook);

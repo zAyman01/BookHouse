@@ -6,6 +6,7 @@ export const createBookSchema = Joi.object({
   price:       Joi.number().min(0).required(),
   genre:       Joi.string().trim().optional(),
   category:    Joi.string().trim().optional(),
+  format:      Joi.string().valid('hardcover', 'paperback', 'e-book', 'audiobook').optional(),
   // Author can publish immediately or keep as draft
   isPublished: Joi.boolean().optional(),
 });
@@ -17,5 +18,6 @@ export const updateBookSchema = Joi.object({
   price:       Joi.number().min(0),
   genre:       Joi.string().trim(),
   category:    Joi.string().trim(),
+  format:      Joi.string().valid('hardcover', 'paperback', 'e-book', 'audiobook'),
   isPublished: Joi.boolean(),
 }).min(1);

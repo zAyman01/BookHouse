@@ -41,6 +41,12 @@ export const deleteBookHandler = catchAsync(async (req, res) => {
   ApiResponse.success(res, null, 'Book deleted successfully');
 });
 
+// ─── GET /api/books/my ────────────────────────────────────────────────────────
+export const getMyBooks = catchAsync(async (req, res) => {
+  const books = await getBooksByAuthor(req.user._id);
+  ApiResponse.success(res, { books }, 'Your books fetched successfully');
+});
+
 // ─── GET /api/books/:id/read ──────────────────────────────────────────────────
 // Streams the actual book file — only for users who purchased the book.
 // Returns the file directly (not JSON) so no ApiResponse wrapper.

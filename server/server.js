@@ -26,11 +26,11 @@ import userRoutes from './routes/user.routes.js';
 import couponRoutes from './routes/coupon.routes.js';
 import reportRoutes from './routes/report.routes.js';
 
-// ─── Environment ──────────────────────────────────────────────────────────────
-dotenv.config();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// ─── Environment ──────────────────────────────────────────────────────────────
+dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
 // ─── Connect to Database ──────────────────────────────────────────────────────
 connectDB();

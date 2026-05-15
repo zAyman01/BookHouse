@@ -1,0 +1,59 @@
+.main { max-width: 900px; margin: 0 auto; padding: var(--space-4) var(--space-3); min-height: 60vh; }
+
+.banner {
+  background: var(--color-surface-warm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: var(--space-4);
+  box-shadow: var(--shadow-warm);
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.avatar {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.name { font-family: var(--font-display); font-size: 22px; font-weight: 600; color: var(--color-text); letter-spacing: -0.02em; }
+
+.email { font-family: var(--font-ui); font-size: 13px; color: var(--color-text-secondary); margin-bottom: 4px; }
+
+.role { display: inline-block; padding: 2px 10px; background: color-mix(in srgb, var(--color-green) 10%, transparent); color: var(--color-green); font-family: var(--font-ui); font-size: 11px; font-weight: 500; border-radius: var(--radius-full); text-transform: capitalize; }
+
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); padding: var(--space-3) var(--space-4); gap: var(--space-2); text-align: center; }
+
+.stats div { display: flex; flex-direction: column; gap: 2px; }
+.stats strong { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--color-text); }
+.stats span { font-family: var(--font-ui); font-size: 11px; font-weight: 500; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+.section { margin-top: var(--space-4); }
+
+.sectionTitle { font-family: var(--font-heading); font-size: 20px; font-weight: 600; color: var(--color-text); margin-bottom: var(--space-2); }
+
+.muted { color: var(--color-text-muted); font-family: var(--font-body); font-size: 14px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--space-2); }
+
+.bookCard { background: var(--color-surface); border: 1px solid var(--color-border-light); border-radius: var(--radius-sm); padding: var(--space-2); }
+
+.bookCard h3 { font-family: var(--font-heading); font-size: 14px; font-weight: 600; color: var(--color-text); margin-bottom: 2px; }
+.bookCard p { font-family: var(--font-italic); font-style: italic; font-size: 12px; color: var(--color-text-secondary); }
+
+@media (max-width: 768px) { .stats { grid-template-columns: repeat(2, 1fr); } .profile { flex-direction: column; text-align: center; } }

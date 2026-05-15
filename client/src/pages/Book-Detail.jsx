@@ -1,147 +1,162 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import Spinner from '../components/Spinner';
+import { useCart } from '../context/CartContext';
+import { useNotification } from '../context/NotificationContext';
+import * as bookService from '../services/book.service';
+import * as reviewService from '../services/review.service';
 import styles from './Book-Detail.module.css';
 
-export default function BookDetails({ book, onBack }) {
- 
-  const DEFAULT_BOOK = {
-    id: 1,
-    title: "Harry Potter : Half Blood Prince",
-    author: "JK Rowling",
-    price: 14.36,
-    rating: 3.5,
-    reviews: "12.4k",
-    language: "English (UK & USA)",
-    genre: "Fantasy",
-    cover: {
-      bg: "linear-gradient(135deg,#1a472a,#2d6a4f,#1b4332)",
-      emoji: "🧙",
-      subtitle: "Harry Potter",
-      and: "AND THE",
-      title: "HALF-BLOOD\nPRINCE",
-      color: "#86efac",
-    },
-    description: "Harry Potter and the Half-Blood Prince is the sixth novel...",
-  };
+const API = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
 
-  const currentBook = book || DEFAULT_BOOK;
+const TABS = ['About', 'Reviews', 'Author Bio', 'Similar Books'];
+
+function StarIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  );
+}
+
+function StarEmptyIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  );
+}
+
+export default function BookDetails() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { addItem } = useCart();
+  const { success } = useNotification();
+  const [book, setBook] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [qty, setQty] = useState(1);
+  const [tab, setTab] = useState('About');
+
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    Promise.all([
+      bookService.getBook(id).catch(() => null),
+      reviewService.getReviews(id).catch(() => ({ reviews: [] })),
+    ])
+      .then(([b, r]) => {
+        if (b) setBook(b.book);
+        setReviews(r.reviews || []);
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  const handleCart = useCallback(() => {
+    if (!book) return;
+    addItem({ _id: book._id, title: book.title, price: book.price, authorName: book.authorName }, qty);
+    success(`"${book.title}" added to cart`);
+  }, [book, qty, addItem, success]);
+
+  const img = (c) => c ? (c.startsWith('http') ? c : `${API}/${c.replace(/\\/g, '/')}`) : '';
+
+  if (loading) return <><Header /><main className={styles.main}><div className={styles.loading}><Spinner size={28} /><p>Loading book...</p></div></main><Footer /></>;
+  if (!book) return <><Header /><main className={styles.main}><div className={styles.notFound}><h1>Not Found</h1><button onClick={() => navigate('/library')}>Browse Library</button></div></main><Footer /></>;
+
+  const rt = Number(book.ratingsAverage) || 0;
+  const fs = Math.floor(rt);
 
   return (
     <>
-      <Header activePage="books" />
-      <main className={styles.bookDetailPage}>
-        {onBack && (
-          <button className={styles.backBtn} onClick={onBack}>
-            ← Back to Library
-          </button>
-        )}
-
-        <BookItem book={currentBook} />
+      <Header />
+      <main className={styles.main}>
+        <div className={styles.layout}>
+          <div className={styles.coverCol}>
+            <div className={styles.coverWrap}>
+              {book.coverImage ? <img src={img(book.coverImage)} alt={book.title} /> : <div className={styles.coverPlaceholder}>{book.title?.charAt(0)}</div>}
+            </div>
+          </div>
+          <div className={styles.infoCol}>
+            <div className={styles.breadcrumb}>
+              <button onClick={() => navigate('/library')} className={styles.breadLink}>Library</button>
+              <span className={styles.breadSep}>/</span>
+              <span className={styles.breadCurrent}>{book.title}</span>
+            </div>
+            <h1 className={styles.title}>{book.title}</h1>
+            <p className={styles.author}>by <strong>{book.authorName}</strong></p>
+            {book.genre && (
+              <div className={styles.tags}>
+                <span className={styles.tag}>{book.genre}</span>
+                {book.format && <span className={styles.tag}>{book.format}</span>}
+              </div>
+            )}
+            <div className={styles.ratingRow}>
+              <div className={styles.stars}>
+                {[1, 2, 3, 4, 5].map(i => <span key={i} className={i <= fs ? styles.starF : styles.starE}>{i <= fs ? <StarIcon /> : <StarEmptyIcon />}</span>)}
+              </div>
+              <span className={styles.ratingNum}>{rt.toFixed(1)}</span>
+              <span className={styles.ratingCount}>({book.ratingsCount || 0} reviews)</span>
+            </div>
+            {book.price && (
+              <div className={styles.priceRow}>
+                <span className={styles.price}>${Number(book.price).toFixed(2)}</span>
+              </div>
+            )}
+            <div className={styles.actions}>
+              <div className={styles.qty}>
+                <button onClick={() => setQty(q => Math.max(1, q - 1))}>&minus;</button>
+                <span>{qty}</span>
+                <button onClick={() => setQty(q => q + 1)}>+</button>
+              </div>
+              <button className={styles.addBtn} onClick={handleCart}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>
+                Add to Cart
+              </button>
+              <button className={styles.iconBtn} aria-label="Bookmark">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                </svg>
+              </button>
+              <button className={styles.iconBtn} aria-label="Share">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                </svg>
+              </button>
+            </div>
+            <div className={styles.tabs}>
+              <div className={styles.tabNav}>
+                {TABS.map(t => <button key={t} className={`${styles.tabBtn} ${tab === t ? styles.tabActive : ''}`} onClick={() => setTab(t)}>{t}</button>)}
+              </div>
+              {tab === 'About' && <div className={styles.tabContent}><p>{book.description || 'No description available.'}</p></div>}
+              {tab === 'Reviews' && (
+                <div className={styles.tabContent}>
+                  {reviews.length === 0 ? <p className={styles.noReviews}>No reviews yet.</p> : reviews.map(r => (
+                    <div key={r._id} className={styles.review}>
+                      <div className={styles.reviewHead}>
+                        <div className={styles.reviewAvatar}>{r.userId?.name?.charAt(0) || 'A'}</div>
+                        <div>
+                          <div className={styles.reviewName}>{r.userId?.name || 'Anonymous'}</div>
+                          <div className={styles.reviewStars}>{[1, 2, 3, 4, 5].map(i => <span key={i} className={i <= (r.rating || 0) ? styles.starF : styles.starE}>{i <= (r.rating || 0) ? <StarIcon /> : <StarEmptyIcon />}</span>)}</div>
+                        </div>
+                      </div>
+                      {r.comment && <p className={styles.reviewText}>{r.comment}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {tab === 'Author Bio' && <div className={styles.tabContent}><p>Information about the author will appear here.</p></div>}
+              {tab === 'Similar Books' && <div className={styles.tabContent}><p>Similar book recommendations will appear here.</p></div>}
+            </div>
+          </div>
+        </div>
       </main>
       <Footer />
     </>
-  );
-}
-
-function BookItem({ book }) {
-  const [qty, setQty] = useState(1);
-  const [wishlisted, setWishlisted] = useState(false);
-  const [cartAdded, setCartAdded] = useState(false);
-
-  const handleAddToCart = useCallback(() => {
-    setCartAdded(true);
-    setTimeout(() => setCartAdded(false), 2000);
-  }, []);
-
-  const coverTitleLines = book.cover.title.split('\n');
-
-  return (
-    <section className={styles.bookSection}>
-      <div className={styles.coverWrapper}>
-        <div className={styles.cover} style={{ background: book.cover.bg }}>
-          <div className={styles.coverSubtitle} style={{ color: book.cover.color }}>
-            {book.cover.subtitle}
-          </div>
-          <div className={styles.coverAnd}>{book.cover.and}</div>
-          <div className={styles.coverTitle}>
-            {coverTitleLines.map((line, i) => (
-              <span key={i}>{line}{i < coverTitleLines.length - 1 && <br />}</span>
-            ))}
-          </div>
-          <div className={styles.coverIcon}>{book.cover.emoji}</div>
-          <div className={styles.coverAuthor}>{book.author.toUpperCase()}</div>
-        </div>
-      </div>
-
-      <div className={styles.info}>
-        <h1 className={styles.title}>{book.title}</h1>
-        <p className={styles.author}>Author : <span className={styles.authorName}>{book.author}</span></p>
-
-        <div className={styles.ratingRow}>
-          <StarRating rating={book.rating} />
-          <span className={styles.reviewCount}>{book.reviews} Customer Reviews</span>
-        </div>
-
-        <div className={styles.price}>$ {book.price.toFixed(2)}</div>
-
-        <div className={styles.qtyRow}>
-          <span className={styles.qtyLabel}>Quantity</span>
-          <div className={styles.qtyControl}>
-            <button className={styles.qtyBtn} onClick={() => setQty(q => Math.max(1, q - 1))}>−</button>
-            <span className={styles.qtyValue}>{qty}</span>
-            <button className={styles.qtyBtn} onClick={() => setQty(q => q + 1)}>+</button>
-          </div>
-        </div>
-
-        <div className={styles.ctaRow}>
-          <button className={`${styles.btnCart} ${cartAdded ? styles.btnCartAdded : ""}`} onClick={handleAddToCart}>
-            {cartAdded ? "✓ ADDED!" : "ADD TO CART"}
-          </button>
-          <button
-            className={`${styles.btnWish} ${wishlisted ? styles.btnWishActive : ""}`}
-            onClick={() => setWishlisted(w => !w)}
-          >
-            {wishlisted ? "WISHLISTED" : "ADD TO WISH LIST"}
-          </button>
-        </div>
-
-        <div className={styles.metaSection}>
-          <div className={styles.description}>
-            <h3 className={styles.metaTitle}>Description</h3>
-            <p className={styles.metaText}>{book.description}</p>
-          </div>
-          <div className={styles.language}>
-            <h3 className={styles.metaTitle}>Language</h3>
-            <p className={styles.metaTextMuted}>{book.language}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function StarRating({ rating, total = 5 }) {
-  return (
-    <div className={styles.stars}>
-      {Array.from({ length: total }).map((_, i) => {
-        const filled = i < Math.floor(rating);
-        const half = !filled && i < rating;
-        return (
-          <svg key={i} width="16" height="16" viewBox="0 0 24 24"
-            fill={filled ? "#f59e0b" : half ? "url(#half)" : "none"}
-            stroke="#f59e0b" strokeWidth="2"
-          >
-            <defs>
-              <linearGradient id="half">
-                <stop offset="50%" stopColor="#f59e0b" />
-                <stop offset="50%" stopColor="transparent" />
-              </linearGradient>
-            </defs>
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-          </svg>
-        );
-      })}
-    </div>
   );
 }
