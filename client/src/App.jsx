@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import './App.css';
 import PageLoader from './components/PageLoader';
+import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import Favorites from './pages/Favorites';
 import SignIn from './pages/SignIn';
@@ -17,8 +19,40 @@ import FaqsPage from './pages/FaqsPage';
 import ContactPage from './pages/ContactPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
+import AuthorProfile from './pages/AuthorProfile';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
+import AuthorRoute from './components/AuthorRoute';
+
+function AnimatedRoutes() {
+  const location = useLocation();
+  return (
+    <AnimatePresence>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Home />} />
+        <Route path="/library" element={<Library />} />
+        <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<AuthorRoute><AuthorDashboard /></AuthorRoute>} />
+        <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+        <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/book-detail/:id" element={<BookDetails />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/author/:id" element={<AuthorProfile />} />
+        <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+        <Route path="/faqs" element={<FaqsPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
 
 function App() {
   const [ready, setReady] = useState(false);
@@ -32,23 +66,9 @@ function App() {
 
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/library" element={<Library />} />
-        <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
-        <Route path="/dashboard" element={<ProtectedRoute><AuthorDashboard /></ProtectedRoute>} />
-        <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-        <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/book-detail/:id" element={<BookDetails />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
-        <Route path="/faqs" element={<FaqsPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
-      </Routes>
+      <div className="bgNoise" />
+      <ScrollToTop />
+      <AnimatedRoutes />
     </Router>
   );
 }

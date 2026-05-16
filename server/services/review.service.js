@@ -99,7 +99,7 @@ export const updateReview = async (reviewId, data, requestingUser) => {
 
   const updatedReview = await Review.findByIdAndUpdate(
     reviewId,
-    { ...data },
+    { ...data, edited: true },
     { new: true, runValidators: true }
   );
 

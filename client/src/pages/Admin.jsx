@@ -36,9 +36,9 @@ export default function Admin() {
 function UsersTab() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const fetch = () => { setLoading(true); api.get('/users').then(({ data }) => setUsers(data.data.users || [])).catch(() => {}).finally(() => setLoading(false)); };
-  useEffect(fetch, []);
-  const deactivate = async (id) => { try { await api.delete(`/users/${id}`); fetch(); } catch (err) { alert(err.response?.data?.message || 'Failed'); } };
+  const refresh = () => { api.get('/users').then(({ data }) => setUsers(data.data.users || [])).catch(() => {}).finally(() => setLoading(false)); };
+  useEffect(() => { refresh(); }, []);
+  const deactivate = async (id) => { try { await api.delete(`/users/${id}`); refresh(); } catch (err) { alert(err.response?.data?.message || 'Failed'); } };
   if (loading) return <p className={styles.loading}>Loading...</p>;
   return (
     <section>
@@ -66,10 +66,10 @@ function CouponsTab() {
   const [coupons, setCoupons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [code, setCode] = useState(''); const [discountPercent, setDiscountPercent] = useState(''); const [expiresAt, setExpiresAt] = useState('');
-  const fetch = () => { setLoading(true); api.get('/coupons').then(({ data }) => setCoupons(data.data.coupons || [])).catch(() => {}).finally(() => setLoading(false)); };
-  useEffect(fetch, []);
-  const handleCreate = async (e) => { e.preventDefault(); try { await api.post('/coupons', { code, discountPercent: Number(discountPercent), expiresAt }); setCode(''); setDiscountPercent(''); setExpiresAt(''); fetch(); } catch (err) { alert(err.response?.data?.message || 'Failed'); } };
-  const handleDelete = async (id) => { try { await api.delete(`/coupons/${id}`); fetch(); } catch (err) { alert(err.response?.data?.message || 'Failed'); } };
+  const refresh = () => { setLoading(true); api.get('/coupons').then(({ data }) => setCoupons(data.data.coupons || [])).catch(() => {}).finally(() => setLoading(false)); };
+  useEffect(() => { refresh(); }, []); // eslint-disable-line react-hooks/set-state-in-effect
+  const handleCreate = async (e) => { e.preventDefault(); try { await api.post('/coupons', { code, discountPercent: Number(discountPercent), expiresAt }); setCode(''); setDiscountPercent(''); setExpiresAt(''); refresh(); } catch (err) { alert(err.response?.data?.message || 'Failed'); } };
+  const handleDelete = async (id) => { try { await api.delete(`/coupons/${id}`); refresh(); } catch (err) { alert(err.response?.data?.message || 'Failed'); } };
   return (
     <section>
       <h2 className={styles.sectionTitle}>Manage Coupons</h2>
@@ -104,9 +104,9 @@ function CouponsTab() {
 function ReportsTab() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
-  const fetch = () => { setLoading(true); api.get('/reports').then(({ data }) => setReports(data.data.reports || [])).catch(() => {}).finally(() => setLoading(false)); };
-  useEffect(fetch, []);
-  const updateStatus = async (id, status) => { try { await api.put(`/reports/${id}`, { status, adminNotes: 'Reviewed' }); fetch(); } catch (err) { alert(err.response?.data?.message || 'Failed'); } };
+  const refresh = () => { api.get('/reports').then(({ data }) => setReports(data.data.reports || [])).catch(() => {}).finally(() => setLoading(false)); };
+  useEffect(() => { refresh(); }, []);
+  const updateStatus = async (id, status) => { try { await api.put(`/reports/${id}`, { status, adminNotes: 'Reviewed' }); refresh(); } catch (err) { alert(err.response?.data?.message || 'Failed'); } };
   if (loading) return <p className={styles.loading}>Loading...</p>;
   return (
     <section>

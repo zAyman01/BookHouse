@@ -39,6 +39,9 @@ coverage/
 # OS files
 Thumbs.db
 
+# Uploads (local dev artifacts)
+server/uploads/
+
 # Temporary files
 *.tmp
 *.temp

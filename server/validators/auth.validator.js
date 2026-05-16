@@ -4,7 +4,7 @@ import { ROLES } from '../config/constants.config.js';
 export const registerSchema = Joi.object({
   name: Joi.string().min(2).max(50).trim().required(),
   email: Joi.string().email().lowercase().trim().required(),
-  password: Joi.string().min(8).required(),
+  password: Joi.string().min(8).max(128).required(),
   // Admins are never self-registered — only user or author allowed here
   role: Joi.string()
     .valid(ROLES.USER, ROLES.AUTHOR)

@@ -4,7 +4,8 @@ import User from '../models/user.model.js';
 import Coupon from '../models/coupon.model.js';
 import AppError from '../utils/appError.util.js';
 import paginate from '../helpers/paginate.helper.js';
-import { ORDER_STATUS } from '../config/constants.config.js';
+import { ORDER_STATUS, ROLES } from '../config/constants.config.js';
+import { sendSaleNotification } from './email.service.js';
 
 export const placeOrder = async ({ bookIds, couponCode }, requestingUser) => {
   const books = await Book.find({ _id: { $in: bookIds }, isPublished: true });
@@ -49,6 +50,7 @@ export const placeOrder = async ({ bookIds, couponCode }, requestingUser) => {
       $addToSet: { library: { $each: bookIds } },
     });
 
+    notifyAuthors(books, requestingUser.name);
     return order;
   }
 
@@ -63,8 +65,20 @@ export const placeOrder = async ({ bookIds, couponCode }, requestingUser) => {
     $addToSet: { library: { $each: bookIds } },
   });
 
+  notifyAuthors(books, requestingUser.name);
   return order;
 };
+
+async function notifyAuthors(books, buyerName) {
+  const authorIds = [...new Set(books.map((b) => b.author.toString()))];
+  const authors = await User.find({ _id: { $in: authorIds } }).select('email').lean();
+  for (const author of authors) {
+    const authorBooks = books.filter((b) => b.author.toString() === author._id.toString());
+    for (const book of authorBooks) {
+      sendSaleNotification(author.email, { bookTitle: book.title, buyerName, amount: book.price }).catch(() => {});
+    }
+  }
+}
 
 export const getMyOrders = async (userId, query) => {
   const { skip, limit, currentPage } = paginate(query);
@@ -93,7 +107,7 @@ export const getOrderById = async (orderId, requestingUser) => {
   if (!order) throw new AppError('Order not found', 404);
 
   const isOwner = order.userId.toString() === requestingUser._id.toString();
-  const isAdmin = requestingUser.role === 'admin';
+  const isAdmin = requestingUser.role === ROLES.ADMIN;
 
   if (!isOwner && !isAdmin) {
     throw new AppError('Not authorized to view this order', 403);

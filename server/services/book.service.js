@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
 import Book from '../models/book.model.js';
 import User from '../models/user.model.js';
+import Order from '../models/order.model.js';
 import Report from '../models/report.model.js';
 import AppError from '../utils/appError.util.js';
 import paginate from '../helpers/paginate.helper.js';
@@ -95,12 +96,10 @@ export const getBookById = async (id) => {
 export const createBook = async (data, files, requestingUser) => {
   const bookData = {
     ...data,
-    // Always set author from the authenticated user — never trust a body-supplied value
     author:     requestingUser._id,
-    authorName: requestingUser.name, // snapshot for text search
+    authorName: requestingUser.name,
   };
 
-  // Files are optional at creation — author can upload them later via update
   if (files?.coverImage?.[0]) bookData.coverImage = files.coverImage[0].path;
   if (files?.bookFile?.[0])   bookData.fileUrl    = files.bookFile[0].path;
 
@@ -128,6 +127,18 @@ export const updateBook = async (id, data, files, requestingUser) => {
   });
 
   return updated;
+};
+
+// ─── Publish Book ─────────────────────────────────────────────────────────────
+export const publishBook = async (id, requestingUser) => {
+  const book = await Book.findById(id);
+  if (!book) throw new AppError('Book not found', 404);
+  const isOwner = book.author.toString() === requestingUser._id.toString();
+  const isAdmin = requestingUser.role === ROLES.ADMIN;
+  if (!isOwner && !isAdmin) throw new AppError('Not authorized', 403);
+  book.isPublished = true;
+  await book.save();
+  return book;
 };
 
 // ─── Delete Book ──────────────────────────────────────────────────────────────
@@ -173,6 +184,151 @@ export const deleteBook = async (id, requestingUser) => {
   } finally {
     session.endSession();
   }
+};
+
+// ─── Author Analytics ─────────────────────────────────────────────────────────
+export const getAuthorAnalytics = async (authorId) => {
+  const books = await Book.find({ author: authorId, isPublished: true })
+    .select('title price ratingsAverage ratingsCount genre coverImage createdAt')
+    .lean();
+
+  const bookIds = books.map((b) => b._id);
+
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+  const [ordersAgg, monthlyAgg, genreAgg] = await Promise.all([
+    // Total sales and revenue
+    Order.aggregate([
+      { $match: { 'books.book': { $in: bookIds }, status: 'completed' } },
+      { $unwind: '$books' },
+      { $match: { 'books.book': { $in: bookIds } } },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: 1 },
+          totalRevenue: { $sum: '$books.priceAtPurchase' },
+          thisMonthSales: {
+            $sum: {
+              $cond: [{ $gte: ['$createdAt', sixMonthsAgo] }, 1, 0],
+            },
+          },
+          thisMonthRevenue: {
+            $sum: {
+              $cond: [{ $gte: ['$createdAt', sixMonthsAgo] }, '$books.priceAtPurchase', 0],
+            },
+          },
+        },
+      },
+    ]),
+    // Monthly revenue (last 6 months)
+    Order.aggregate([
+      { $match: { 'books.book': { $in: bookIds }, status: 'completed', createdAt: { $gte: sixMonthsAgo } } },
+      { $unwind: '$books' },
+      { $match: { 'books.book': { $in: bookIds } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } },
+          revenue: { $sum: '$books.priceAtPurchase' },
+          sales: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]),
+    // Genre breakdown
+    Order.aggregate([
+      { $match: { 'books.book': { $in: bookIds }, status: 'completed' } },
+      { $unwind: '$books' },
+      { $match: { 'books.book': { $in: bookIds } } },
+      { $lookup: { from: 'books', localField: 'books.book', foreignField: '_id', as: 'bookInfo' } },
+      { $unwind: '$bookInfo' },
+      {
+        $group: {
+          _id: '$bookInfo.genre',
+          sales: { $sum: 1 },
+          revenue: { $sum: '$books.priceAtPurchase' },
+        },
+      },
+      { $sort: { sales: -1 } },
+    ]),
+  ]);
+
+  const totalSales = ordersAgg?.[0]?.totalSales || 0;
+  const totalRevenue = ordersAgg?.[0]?.totalRevenue || 0;
+  const thisMonthSales = ordersAgg?.[0]?.thisMonthSales || 0;
+  const thisMonthRevenue = ordersAgg?.[0]?.thisMonthRevenue || 0;
+  const avgRating =
+    books.reduce((s, b) => s + (b.ratingsAverage || 0), 0) / (books.length || 1);
+  const totalBooks = books.length;
+
+  // Per-book sales
+  const bookSalesAgg = await Order.aggregate([
+    { $match: { 'books.book': { $in: bookIds }, status: 'completed' } },
+    { $unwind: '$books' },
+    { $match: { 'books.book': { $in: bookIds } } },
+    {
+      $group: {
+        _id: '$books.book',
+        sales: { $sum: 1 },
+        revenue: { $sum: '$books.priceAtPurchase' },
+      },
+    },
+  ]);
+  const salesMap = {};
+  for (const s of bookSalesAgg) salesMap[s._id.toString()] = { sales: s.sales, revenue: s.revenue };
+
+  const bookStats = books.map((b) => ({
+    _id: b._id,
+    title: b.title,
+    genre: b.genre,
+    coverImage: b.coverImage,
+    price: b.price,
+    ratingsAverage: b.ratingsAverage || 0,
+    ratingsCount: b.ratingsCount || 0,
+    sales: salesMap[b._id.toString()]?.sales || 0,
+    revenue: salesMap[b._id.toString()]?.revenue || 0,
+  }));
+
+  // Top selling book
+  bookStats.sort((a, b) => b.sales - a.sales);
+  const topBook = bookStats[0] || null;
+
+  // Fill missing months
+  const monthlyRevenue = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date();
+    d.setMonth(d.getMonth() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const found = monthlyAgg.find((m) => m._id === key);
+    monthlyRevenue.push({
+      month: key,
+      revenue: found?.revenue || 0,
+      sales: found?.sales || 0,
+    });
+  }
+
+  return {
+    totalBooks,
+    totalSales,
+    totalRevenue: Math.round(totalRevenue * 100) / 100,
+    averageRating: Math.round(avgRating * 10) / 10,
+    thisMonthSales,
+    thisMonthRevenue: Math.round(thisMonthRevenue * 100) / 100,
+    topBook,
+    monthlyRevenue,
+    genreBreakdown: genreAgg.map((g) => ({ genre: g._id, sales: g.sales, revenue: g.revenue })),
+    books: bookStats,
+  };
+};
+
+export const getGenres = async () => {
+  const genres = await Book.aggregate([
+    { $match: { isPublished: true, genre: { $exists: true, $ne: '' } } },
+    { $group: { _id: '$genre', count: { $sum: 1 } } },
+    { $sort: { count: -1 } },
+    { $project: { name: '$_id', count: 1, _id: 0 } },
+  ]);
+  return genres;
 };
 
 // ─── Get Book File Path (for protected read endpoint) ─────────────────────────

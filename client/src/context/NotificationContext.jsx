@@ -105,6 +105,7 @@ function ToastItem({ notification, onDismiss }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useNotification() {
   return useContext(NotificationContext);
 }

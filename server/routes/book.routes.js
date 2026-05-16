@@ -13,6 +13,12 @@ const router = Router();
 // GET /api/books?search=&genre=&category=&minPrice=&maxPrice=&sort=&page=&limit=
 router.get('/', bookController.getAllBooksHandler);
 
+// GET /api/books/genres — genre counts — must be before /:id
+router.get('/genres', bookController.getGenresHandler);
+
+// GET /api/books/analytics — author dashboard data — must be before /:id
+router.get('/analytics', protect, authorize(ROLES.AUTHOR, ROLES.ADMIN), bookController.getAnalyticsHandler);
+
 // GET /api/books/my — get own books (author) — must be before /:id
 router.get('/my', protect, authorize(ROLES.AUTHOR, ROLES.ADMIN), bookController.getMyBooks);
 
@@ -44,6 +50,9 @@ router.put(
   validate(updateBookSchema),
   bookController.updateBookHandler
 );
+
+// PUT /api/books/:id/publish — publish a draft
+router.put('/:id/publish', protect, authorize(ROLES.AUTHOR, ROLES.ADMIN), bookController.publishBookHandler);
 
 // DELETE /api/books/:id
 router.delete(

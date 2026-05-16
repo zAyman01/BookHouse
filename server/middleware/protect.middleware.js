@@ -22,6 +22,9 @@ const protect = catchAsync(async (req, res, next) => {
   const token = authHeader.split(' ')[1];
 
   // 2. Verify token
+  if (!process.env.JWT_SECRET) {
+    return next(new AppError('Server configuration error.', 500));
+  }
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
   // 3. Check user still exists in DB

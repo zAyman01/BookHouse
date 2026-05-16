@@ -1,16 +1,20 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Spinner from '../components/Spinner';
 import { useCart } from '../context/CartContext';
+import { fadeUp, staggerContainer, staggerItem, pageTransition } from '../utils/animations';
 import { useNotification } from '../context/NotificationContext';
+import useAuth from '../hooks/useAuth';
 import * as orderService from '../services/order.service';
 import * as couponService from '../services/coupon.service';
 import styles from './Cart.module.css';
 
 export default function Cart() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const { items, removeItem, updateQuantity, clearCart, subtotal } = useCart();
   const { success, error } = useNotification();
   const [couponCode, setCouponCode] = useState('');
@@ -36,6 +40,7 @@ export default function Cart() {
   };
 
   const handlePlaceOrder = async () => {
+    if (!isAuthenticated) { navigate('/signin'); return; }
     setPlacing(true); setOrderError('');
     try {
       const bookIds = items.map((item) => item.book._id);
@@ -55,18 +60,27 @@ export default function Cart() {
   return (
     <>
       <Header />
-      <main className={styles.main}>
-        <h1 className={styles.pageTitle}>Shopping Cart</h1>
+      <motion.main className={styles.main} variants={pageTransition} initial="initial" animate="animate" exit="exit">
+        <motion.h1 className={styles.pageTitle} variants={fadeUp}>Shopping Cart</motion.h1>
         {items.length === 0 ? (
           <div className={styles.empty}>
             <p>Your cart is empty.</p>
             <button className={styles.primaryBtn} onClick={() => navigate('/library')}>Browse Books</button>
           </div>
         ) : (
+          <>
+          {!isAuthenticated && (
+            <div className={styles.loginPrompt}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              <span>You need to <Link to="/signin">sign in</Link> to place an order. Your items are saved.</span>
+            </div>
+          )}
           <div className={styles.layout}>
-            <div className={styles.items}>
+            <motion.div className={styles.items} variants={staggerContainer} initial="initial" animate="animate">
               {items.map(({ book, quantity }) => (
-                <div key={book._id} className={styles.item}>
+                <motion.div key={book._id} className={styles.item} variants={staggerItem}>
                   <div className={styles.itemInfo}>
                     <h3>{book.title}</h3>
                     <p className={styles.itemAuthor}>{book.authorName}</p>
@@ -81,9 +95,9 @@ export default function Cart() {
                     <p className={styles.itemTotal}>${(book.price * quantity).toFixed(2)}</p>
                     <button className={styles.removeBtn} onClick={() => removeItem(book._id)}>Remove</button>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
             <div className={styles.summary}>
               <h2>Order Summary</h2>
               <div className={styles.coupon}>
@@ -101,8 +115,9 @@ export default function Cart() {
               </button>
             </div>
           </div>
+          </>
         )}
-      </main>
+      </motion.main>
       <Footer />
     </>
   );

@@ -1,22 +1,20 @@
 import { createContext, useState, useEffect, useCallback } from 'react';
 import * as authService from '../services/auth.service';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!token);
 
   const isAuthenticated = !!user;
   const isAdmin = user?.role === 'admin';
   const isAuthor = user?.role === 'author';
 
   useEffect(() => {
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+    if (!token) return;
 
     authService
       .getMe()
@@ -58,6 +56,10 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  const updateUser = useCallback((updatedUser) => {
+    setUser(updatedUser);
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -70,6 +72,7 @@ export function AuthProvider({ children }) {
         login,
         register,
         logout,
+        updateUser,
       }}
     >
       {children}

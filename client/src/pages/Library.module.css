@@ -377,17 +377,22 @@
 .favBtn:hover { color: var(--color-red); }
 .favActive { color: var(--color-red) !important; }
 
-.bookBody { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.bookBody { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
 
-.bookFormat { font-size: 9px; font-weight: 500; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--font-ui); }
+.starsRow { display: flex; align-items: center; gap: 2px; }
+.starF { color: var(--color-accent); display: flex; }
+.starE { color: var(--color-border); display: flex; }
+.starsCount { margin-left: 4px; font-family: var(--font-ui); font-size: 11px; color: var(--color-text-muted); }
 
-.bookTitle { font-family: var(--font-heading); font-size: 13px; font-weight: 600; color: var(--color-text); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.bookTitle { font-family: var(--font-heading); font-size: 15px; font-weight: 600; color: var(--color-text); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-.bookAuthor { font-family: var(--font-italic); font-style: italic; font-size: 11px; color: var(--color-text-secondary); }
+.bookAuthor { font-family: var(--font-italic); font-style: italic; font-size: 12px; color: var(--color-text-secondary); }
 
-.bookFooter { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 6px; border-top: 1px solid var(--color-border-light); }
+.bookFormat { font-family: var(--font-ui); font-size: 10px; font-weight: 500; color: var(--color-text-muted); text-transform: capitalize; }
 
-.bookPrice { font-family: var(--font-ui); font-size: 13px; font-weight: 600; color: var(--color-primary); }
+.bookFooter { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; margin-top: 4px; border-top: 1px solid var(--color-border-light); }
+
+.bookPrice { font-family: var(--font-ui); font-size: 16px; font-weight: 700; color: var(--color-primary); }
 
 .addCartBtn {
   width: 30px; height: 30px;

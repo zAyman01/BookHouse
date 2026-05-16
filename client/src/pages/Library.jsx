@@ -1,8 +1,10 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import * as bookService from '../services/book.service';
+import { staggerContainer, staggerItem, pageTransition } from '../utils/animations';
 import heroImg from '../assets/library-hero-section.png';
 import styles from './Library.module.css';
 
@@ -19,9 +21,7 @@ const GENRES = [
 ];
 const FORMATS = ['hardcover', 'paperback', 'e-book', 'audiobook'];
 
-const API = (
-  import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
-).replace('/api', '');
+const API = (import.meta.env.VITE_API_URL || '/api').replace('/api', '');
 
 export default function Library() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -40,7 +40,6 @@ export default function Library() {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    setLoading(true);
     const params = {
       page: currentPage,
       limit: BOOKS_PER_PAGE,
@@ -102,7 +101,7 @@ export default function Library() {
   return (
     <>
       <Header />
-      <main className={styles.main}>
+      <motion.main className={styles.main} variants={pageTransition} initial="initial" animate="animate" exit="exit">
         <section className={styles.hero}>
           <div className={styles.heroBg}>
             <img src={heroImg} alt="Library background" loading="lazy" />
@@ -225,7 +224,7 @@ export default function Library() {
               </div>
             </div>
 
-            <div className={styles.grid}>
+            <motion.div className={styles.grid} variants={staggerContainer} initial="initial" animate="animate">
               {loading ? (
                 <div className={styles.empty}>
                   <p>Loading books...</p>
@@ -234,7 +233,7 @@ export default function Library() {
                 books.map((book) => {
                   const stars = Math.floor(book.ratingsAverage || 0);
                   return (
-                    <article key={book._id} className={styles.bookCard}>
+                    <motion.article key={book._id} className={styles.bookCard} variants={staggerItem} whileHover={{ y: -4 }}>
                       <a
                         href={`/book-detail/${book._id}`}
                         className={styles.bookCover}
@@ -319,7 +318,7 @@ export default function Library() {
                           </button>
                         </div>
                       </div>
-                    </article>
+                    </motion.article>
                   );
                 })
               ) : (
@@ -334,7 +333,7 @@ export default function Library() {
                   </button>
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {totalPages > 1 && (
               <div className={styles.pagination}>
@@ -372,7 +371,7 @@ export default function Library() {
             )}
           </div>
         </div>
-      </main>
+      </motion.main>
       <Footer />
     </>
   );

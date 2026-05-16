@@ -6,7 +6,11 @@ import {
   createBook,
   updateBook,
   deleteBook,
+  publishBook,
   getBookFilePath,
+  getGenres,
+  getAuthorAnalytics,
+  getBooksByAuthor,
 } from '../services/book.service.js';
 
 // ─── GET /api/books ───────────────────────────────────────────────────────────
@@ -35,10 +39,28 @@ export const updateBookHandler = catchAsync(async (req, res) => {
   ApiResponse.success(res, { book }, 'Book updated successfully');
 });
 
+// ─── PUT /api/books/:id/publish ───────────────────────────────────────────────
+export const publishBookHandler = catchAsync(async (req, res) => {
+  const book = await publishBook(req.params.id, req.user);
+  ApiResponse.success(res, { book }, 'Book published successfully');
+});
+
 // ─── DELETE /api/books/:id ────────────────────────────────────────────────────
 export const deleteBookHandler = catchAsync(async (req, res) => {
   await deleteBook(req.params.id, req.user);
   ApiResponse.success(res, null, 'Book deleted successfully');
+});
+
+// ─── GET /api/books/genres ─────────────────────────────────────────────────────
+export const getGenresHandler = catchAsync(async (req, res) => {
+  const genres = await getGenres();
+  ApiResponse.success(res, { genres }, 'Genres fetched successfully');
+});
+
+// ─── GET /api/books/analytics ──────────────────────────────────────────────────
+export const getAnalyticsHandler = catchAsync(async (req, res) => {
+  const analytics = await getAuthorAnalytics(req.user._id);
+  ApiResponse.success(res, analytics, 'Analytics fetched successfully');
 });
 
 // ─── GET /api/books/my ────────────────────────────────────────────────────────

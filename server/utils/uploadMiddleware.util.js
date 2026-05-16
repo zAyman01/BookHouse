@@ -1,96 +1,56 @@
 import multer from 'multer';
-import path from 'path';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import cloudinary from '../config/cloudinary.config.js';
 import AppError from './appError.util.js';
-import { UPLOAD_PATHS } from '../config/constants.config.js';
 
-// ─── Storage: Book Files (PDF / epub) ────────────────────────────────────────
-const bookStorage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOAD_PATHS.BOOKS),
-  filename: (req, file, cb) => {
-    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `book-${unique}${path.extname(file.originalname)}`);
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ALLOWED_BOOK_TYPES = ['application/pdf', 'application/epub+zip'];
+
+// Covers go to Cloudinary
+const coverStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'book-house/covers',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    transformation: [{ width: 600, height: 900, crop: 'fill' }],
+    public_id: () => `cover-${Date.now()}`,
   },
 });
 
-const bookFileFilter = (req, file, cb) => {
-  const allowed = ['application/pdf', 'application/epub+zip'];
-  if (allowed.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new AppError('Only PDF and EPUB files are allowed for books.', 400), false);
-  }
-};
+// Book files use memoryStorage (no disk on Vercel)
+const bookStorage = multer.memoryStorage();
 
-// ─── Storage: Cover Images ────────────────────────────────────────────────────
-const coverStorage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOAD_PATHS.COVERS),
-  filename: (req, file, cb) => {
-    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `cover-${unique}${path.extname(file.originalname)}`);
-  },
-});
-
-const coverFileFilter = (req, file, cb) => {
-  const allowed = ['image/jpeg', 'image/png', 'image/webp'];
-  if (allowed.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new AppError('Only JPEG, PNG, and WebP images are allowed for covers.', 400), false);
-  }
-};
-
-// ─── Exported Multer Instances ────────────────────────────────────────────────
-
-/** Upload a single book file (field name: "bookFile") */
-export const uploadBookFile = multer({
-  storage: bookStorage,
-  fileFilter: bookFileFilter,
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
-}).single('bookFile');
-
-/** Upload a single cover image (field name: "coverImage") */
-export const uploadCoverImage = multer({
-  storage: coverStorage,
-  fileFilter: coverFileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
-}).single('coverImage');
-
-/**
- * Combined upload for create/update book routes.
- * Use this instead of chaining uploadCoverImage + uploadBookFile —
- * chaining two .single() instances overwrites req.file on the second pass.
- * Both files land in req.files independently:
- *   req.files?.coverImage?.[0]?.path
- *   req.files?.bookFile?.[0]?.path
- */
-const combinedStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, file.fieldname === 'coverImage' ? UPLOAD_PATHS.COVERS : UPLOAD_PATHS.BOOKS);
-  },
-  filename: (req, file, cb) => {
-    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const prefix = file.fieldname === 'coverImage' ? 'cover' : 'book';
-    cb(null, `${prefix}-${unique}${path.extname(file.originalname)}`);
-  },
-});
-
-const combinedFileFilter = (req, file, cb) => {
+const fileFilter = (req, file, cb) => {
   if (file.fieldname === 'coverImage') {
-    const allowed = ['image/jpeg', 'image/png', 'image/webp'];
-    if (allowed.includes(file.mimetype)) cb(null, true);
-    else cb(new AppError('Only JPEG, PNG, and WebP images are allowed for covers.', 400), false);
-  } else {
-    const allowed = ['application/pdf', 'application/epub+zip'];
-    if (allowed.includes(file.mimetype)) cb(null, true);
-    else cb(new AppError('Only PDF and EPUB files are allowed for books.', 400), false);
+    if (ALLOWED_IMAGE_TYPES.includes(file.mimetype)) return cb(null, true);
+    return cb(new AppError('Only JPEG, PNG, and WebP images are allowed for covers.', 400), false);
   }
+  if (ALLOWED_BOOK_TYPES.includes(file.mimetype)) return cb(null, true);
+  cb(new AppError('Only PDF and EPUB files are allowed for books.', 400), false);
+};
+
+const combinedStorage = {
+  _handleFile: (req, file, cb) => {
+    if (file.fieldname === 'coverImage') {
+      coverStorage._handleFile(req, file, cb);
+    } else {
+      bookStorage._handleFile(req, file, cb);
+    }
+  },
+  _removeFile: (req, file, cb) => {
+    if (file.fieldname === 'coverImage') {
+      coverStorage._removeFile(req, file, cb);
+    } else {
+      bookStorage._removeFile(req, file, cb);
+    }
+  },
 };
 
 export const uploadBookFiles = multer({
   storage: combinedStorage,
-  fileFilter: combinedFileFilter,
+  fileFilter,
   limits: { fileSize: 50 * 1024 * 1024 },
 }).fields([
   { name: 'coverImage', maxCount: 1 },
-  { name: 'bookFile',   maxCount: 1 },
+  { name: 'bookFile', maxCount: 1 },
 ]);

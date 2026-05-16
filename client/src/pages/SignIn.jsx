@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Spinner from '../components/Spinner';
 import useAuth from '../hooks/useAuth';
 import { useNotification } from '../context/NotificationContext';
+import { fadeUp, staggerContainer, staggerItem, pageTransition } from '../utils/animations';
 import styles from './SignIn.module.css';
 
 function EyeIcon({ off }) {
@@ -73,50 +75,49 @@ export default function SignIn() {
     }
   };
 
+  const fieldError = (name) => touched[name] && errors[name];
+
   return (
     <>
       <Header />
-      <main className={styles.main}>
-        <div className={styles.panel}>
-          <div className={styles.brandPanel}>
-            <div className={styles.brandInner}>
-              <h2 className={styles.brandTitle}>book<b>House</b></h2>
-              <p className={styles.brandTag}>Where stories find their readers.</p>
-            </div>
+      <motion.main className={styles.main} variants={pageTransition} initial="initial" animate="animate" exit="exit">
+        <motion.div className={styles.card} variants={fadeUp}>
+          <div className={styles.header}>
+            <motion.h1 className={styles.title} variants={fadeUp}>Welcome Back</motion.h1>
+            <motion.p className={styles.subtitle} variants={fadeUp}>Sign in to continue your reading journey</motion.p>
           </div>
-          <div className={styles.formPanel}>
-            <div className={styles.card}>
-              <div className={styles.header}>
-                <h1 className={styles.title}>Welcome Back</h1>
-                <p className={styles.subtitle}>Sign in to continue your reading journey</p>
+          <motion.form onSubmit={handleSubmit} className={styles.form} noValidate variants={staggerContainer} initial="initial" animate="animate">
+            <motion.div className={styles.field} variants={staggerItem}>
+              <label htmlFor="email">Email</label>
+              <input id="email" type="email" name="email" value={form.email} onChange={handleChange} onBlur={handleBlur}
+                className={fieldError('email') ? styles.error : ''} autoComplete="email" placeholder="you@example.com" />
+              {fieldError('email') && <span className={styles.err}>{errors.email}</span>}
+            </motion.div>
+            <motion.div className={styles.field} variants={staggerItem}>
+              <label htmlFor="password">Password</label>
+              <div className={styles.inputWrap}>
+                <input id="password" type={showPassword ? 'text' : 'password'} name="password" value={form.password}
+                  onChange={handleChange} onBlur={handleBlur} className={fieldError('password') ? styles.error : ''} autoComplete="current-password" placeholder="Enter your password" />
+                <button type="button" className={styles.eyeBtn} onClick={() => setShowPassword(v => !v)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'} tabIndex={-1}><EyeIcon off={showPassword} /></button>
               </div>
-              <form onSubmit={handleSubmit} className={styles.form} noValidate>
-                <div className={styles.field}>
-                  <label htmlFor="email">Email</label>
-                  <input id="email" type="email" name="email" value={form.email} onChange={handleChange} onBlur={handleBlur}
-                    className={touched.email && errors.email ? styles.error : ''} autoComplete="email" placeholder="you@example.com" />
-                  {touched.email && errors.email && <span className={styles.err}>{errors.email}</span>}
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="password">Password</label>
-                  <div className={styles.inputWrap}>
-                    <input id="password" type={showPassword ? 'text' : 'password'} name="password" value={form.password}
-                      onChange={handleChange} onBlur={handleBlur} className={touched.password && errors.password ? styles.error : ''} autoComplete="current-password" placeholder="Enter your password" />
-                    <button type="button" className={styles.eyeBtn} onClick={() => setShowPassword(v => !v)}
-                      aria-label={showPassword ? 'Hide password' : 'Show password'} tabIndex={-1}><EyeIcon off={showPassword} /></button>
-                  </div>
-                  {touched.password && errors.password && <span className={styles.err}>{errors.password}</span>}
-                </div>
-                {apiError && <p className={styles.apiError}>{apiError}</p>}
-                <button type="submit" className={styles.submit} disabled={submitting}>
-                  {submitting ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Spinner size={16} /> Signing in...</span> : 'Sign In'}
-                </button>
-              </form>
-              <p className={styles.switch}>Don&apos;t have an account? <Link to="/signup">Sign up</Link></p>
-            </div>
-          </div>
-        </div>
-      </main>
+              {fieldError('password') && <span className={styles.err}>{errors.password}</span>}
+            </motion.div>
+            {apiError && (
+              <div className={styles.apiError}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
+                </svg>
+                {apiError}
+              </div>
+            )}
+            <motion.button type="submit" className={styles.submit} disabled={submitting} variants={staggerItem}>
+              {submitting ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Spinner size={16} /> Signing in...</span> : 'Sign In'}
+            </motion.button>
+          </motion.form>
+          <motion.p className={styles.switch} variants={fadeUp}>Don&apos;t have an account? <Link to="/signup">Sign up</Link> &middot; <Link to="/forgot-password">Forgot password?</Link></motion.p>
+        </motion.div>
+      </motion.main>
       <Footer />
     </>
   );

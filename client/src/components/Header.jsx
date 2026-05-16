@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
+import { useCart } from '../context/CartContext';
 import useAuth from '../hooks/useAuth';
+import { staggerContainer, staggerItem } from '../utils/animations';
 import styles from './Header.module.css';
 
 const NAV = [
@@ -17,14 +20,6 @@ function BookIcon() {
       <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
       <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
       <line x1="8" y1="7" x2="16" y2="7" /><line x1="8" y1="11" x2="14" y2="11" />
-    </svg>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
     </svg>
   );
 }
@@ -45,21 +40,23 @@ function MoonIcon() {
   );
 }
 
-function UserIcon() {
+function CartIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+      <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
     </svg>
   );
 }
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
   const { theme, toggleTheme } = useTheme();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, isAuthor, user, logout } = useAuth();
+  const { totalItems, clearCart } = useCart();
+  const navLinks = isAuthor ? [...NAV, { to: '/dashboard', label: 'Dashboard', page: 'dashboard' }] : NAV;
   const active = pathname === '/' ? 'home' : pathname.slice(1).split('/')[0] || 'home';
 
   useEffect(() => {
@@ -68,7 +65,7 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const handleLogout = () => { logout(); setOpen(false); };
+  const handleLogout = () => { logout(); clearCart(); setOpen(false); };
 
   return (
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
@@ -82,23 +79,34 @@ export default function Header() {
           <span /><span /><span />
         </button>
 
-        <nav className={`${styles.nav} ${open ? styles.navVisible : ''}`}>
-          <ul className={styles.navList}>
-            {NAV.map(n => (
-              <li key={n.page}>
-                <Link to={n.to} className={`${styles.navLink} ${active === n.page ? styles.active : ''}`} onClick={() => setOpen(false)}>{n.label}</Link>
-              </li>
-            ))}
-          </ul>
+        <div className={`${styles.centerGroup} ${open ? styles.centerGroupOpen : ''}`}>
+          <div className={styles.navWrap}>
+            <motion.ul className={styles.navList} variants={staggerContainer} initial="initial" animate="animate">
+                  {navLinks.map(n => (
+                <motion.li key={n.page} variants={staggerItem}>
+                  <Link to={n.to} className={`${styles.navLink} ${active === n.page ? styles.active : ''}`} onClick={() => setOpen(false)}>{n.label}</Link>
+                </motion.li>
+              ))}
+            </motion.ul>
+          </div>
           <div className={styles.actions}>
-            <button className={styles.searchBtn} onClick={() => setSearchOpen(v => !v)} aria-label="Search"><SearchIcon /></button>
+            <Link to="/cart" className={styles.cartBtn} aria-label="Shopping Cart">
+              <CartIcon />
+              {totalItems > 0 && <span className={styles.cartBadge}>{totalItems > 99 ? '99+' : totalItems}</span>}
+            </Link>
             <button className={styles.themeBtn} onClick={toggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
               {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
             </button>
             {isAuthenticated ? (
               <div className={styles.profileGroup}>
                 <Link to="/account" className={styles.profileBtn} aria-label="My Account">
-                  <span className={styles.avatar}>{user?.name?.charAt(0)?.toUpperCase() || 'U'}</span>
+                  {user?.avatar ? (
+                    <span className={styles.avatar} style={{ background: 'none', overflow: 'hidden' }}>
+                      <img src={user.avatar} alt="" className={styles.avatarImg} />
+                    </span>
+                  ) : (
+                    <span className={styles.avatar}>{user?.name?.charAt(0)?.toUpperCase() || 'U'}</span>
+                  )}
                 </Link>
                 <button onClick={handleLogout} className={styles.logoutBtn} aria-label="Log out">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -113,20 +121,10 @@ export default function Header() {
               </>
             )}
           </div>
-        </nav>
-      </div>
-
-      {searchOpen && (
-        <div className={styles.searchBar}>
-          <div className={styles.searchInner}>
-            <SearchIcon />
-            <input type="text" placeholder="Search books..." autoFocus />
-            <button className={styles.searchClose} onClick={() => setSearchOpen(false)} aria-label="Close">✕</button>
-          </div>
         </div>
-      )}
 
-      {open && <div className={styles.overlay} onClick={() => setOpen(false)} />}
+        {open && <div className={styles.overlay} onClick={() => setOpen(false)} />}
+      </div>
     </header>
   );
 }

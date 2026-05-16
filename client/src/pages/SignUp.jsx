@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Spinner from '../components/Spinner';
 import useAuth from '../hooks/useAuth';
 import { useNotification } from '../context/NotificationContext';
+import { fadeUp, staggerContainer, staggerItem, pageTransition } from '../utils/animations';
 import styles from './SignUp.module.css';
 
 const INITIAL = { name: '', email: '', password: '', confirmPassword: '', role: 'user' };
@@ -86,26 +88,26 @@ export default function SignUp() {
   return (
     <>
       <Header />
-      <main className={styles.main}>
-        <div className={styles.card}>
+      <motion.main className={styles.main} variants={pageTransition} initial="initial" animate="animate" exit="exit">
+        <motion.div className={styles.card} variants={fadeUp}>
           <div className={styles.header}>
-            <h1 className={styles.title}>Create Account</h1>
-            <p className={styles.subtitle}>Join BookHouse and start your journey</p>
+            <motion.h1 className={styles.title} variants={fadeUp}>Create Account</motion.h1>
+            <motion.p className={styles.subtitle} variants={fadeUp}>Join BookHouse and start your journey</motion.p>
           </div>
-          <form onSubmit={handleSubmit} className={styles.form} noValidate>
-            <div className={styles.field}>
+          <motion.form onSubmit={handleSubmit} className={styles.form} noValidate variants={staggerContainer} initial="initial" animate="animate">
+            <motion.div className={styles.field} variants={staggerItem}>
               <label htmlFor="name">Full Name</label>
               <input id="name" type="text" name="name" value={form.name} onChange={handleChange} onBlur={handleBlur}
                 className={fieldError('name') ? styles.error : ''} autoComplete="name" placeholder="John Doe" />
               {fieldError('name') && <span className={styles.err}>{errors.name}</span>}
-            </div>
-            <div className={styles.field}>
+            </motion.div>
+            <motion.div className={styles.field} variants={staggerItem}>
               <label htmlFor="email">Email</label>
               <input id="email" type="email" name="email" value={form.email} onChange={handleChange} onBlur={handleBlur}
                 className={fieldError('email') ? styles.error : ''} autoComplete="email" placeholder="you@example.com" />
               {fieldError('email') && <span className={styles.err}>{errors.email}</span>}
-            </div>
-            <div className={styles.field}>
+            </motion.div>
+            <motion.div className={styles.field} variants={staggerItem}>
               <label htmlFor="password">Password</label>
               <div className={styles.inputWrap}>
                 <input id="password" type={showPassword ? 'text' : 'password'} name="password" value={form.password}
@@ -114,8 +116,8 @@ export default function SignUp() {
                   aria-label={showPassword ? 'Hide password' : 'Show password'} tabIndex={-1}><EyeIcon off={showPassword} /></button>
               </div>
               {fieldError('password') && <span className={styles.err}>{errors.password}</span>}
-            </div>
-            <div className={styles.field}>
+            </motion.div>
+            <motion.div className={styles.field} variants={staggerItem}>
               <label htmlFor="confirmPassword">Confirm Password</label>
               <div className={styles.inputWrap}>
                 <input id="confirmPassword" type={showConfirm ? 'text' : 'password'} name="confirmPassword" value={form.confirmPassword}
@@ -124,8 +126,8 @@ export default function SignUp() {
                   aria-label={showConfirm ? 'Hide password' : 'Show password'} tabIndex={-1}><EyeIcon off={showConfirm} /></button>
               </div>
               {fieldError('confirmPassword') && <span className={styles.err}>{errors.confirmPassword}</span>}
-            </div>
-            <div className={styles.field}>
+            </motion.div>
+            <motion.div className={styles.field} variants={staggerItem}>
               <label>Account Type</label>
               <div className={styles.roleGroup}>
                 <label className={`${styles.roleOption} ${form.role === 'user' ? styles.roleActive : ''}`}>
@@ -143,15 +145,15 @@ export default function SignUp() {
                   <span>Author</span>
                 </label>
               </div>
-            </div>
-            {apiError && <p className={styles.apiError}>{apiError}</p>}
-            <button type="submit" className={styles.submit} disabled={submitting}>
+            </motion.div>
+            {apiError && <motion.p className={styles.apiError} variants={staggerItem}>{apiError}</motion.p>}
+            <motion.button type="submit" className={styles.submit} disabled={submitting} variants={staggerItem} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
               {submitting ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Spinner size={16} /> Creating...</span> : 'Create Account'}
-            </button>
-          </form>
-          <p className={styles.switch}>Already have an account? <Link to="/signin">Sign in</Link></p>
-        </div>
-      </main>
+            </motion.button>
+          </motion.form>
+          <motion.p className={styles.switch} variants={fadeUp}>Already have an account? <Link to="/signin">Sign in</Link></motion.p>
+        </motion.div>
+      </motion.main>
       <Footer />
     </>
   );

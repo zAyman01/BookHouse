@@ -46,7 +46,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   // Development: show full stack trace
-  if (process.env.NODE_ENV === 'dev') {
+  if (process.env.NODE_ENV === 'development') {
     return res.status(error.statusCode).json({
       success: false,
       message: error.message,
@@ -56,7 +56,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   // Production: only send operational errors to client; hide unknown errors
-  if (err.isOperational) {
+  if (error.isOperational) {
     return res.status(error.statusCode).json({
       success: false,
       message: error.message,
