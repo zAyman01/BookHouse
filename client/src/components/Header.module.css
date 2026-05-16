@@ -218,10 +218,12 @@
 .hamburger {
   display: none;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
   gap: 5px;
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
+  padding: 6px;
   background: none;
   border: none;
   z-index: 1001;
@@ -250,6 +252,8 @@
     top: 0; right: 0;
     width: 280px;
     height: 100vh;
+    height: 100dvh;
+    overflow-y: auto;
     background: var(--color-surface);
     flex-direction: column;
     align-items: stretch;
@@ -289,4 +293,14 @@
     background: rgba(0, 0, 0, 0.3);
     z-index: 999;
   }
+}
+
+@media (max-width: 480px) {
+  .centerGroup { width: 100%; }
+  .inner { padding: 0 var(--space-3); }
+  .logoText { font-size: 18px; }
+}
+
+@media (min-width: 901px) {
+  .overlay { display: none !important; }
 }

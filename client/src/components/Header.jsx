@@ -65,6 +65,15 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
+
   const handleLogout = () => { logout(); clearCart(); setOpen(false); };
 
   return (
@@ -75,7 +84,7 @@ export default function Header() {
           <span className={styles.logoText}>book<span className={styles.logoBold}>House</span></span>
         </Link>
 
-        <button className={`${styles.hamburger} ${open ? styles.open : ''}`} onClick={() => setOpen(v => !v)} aria-label="Menu">
+        <button className={`${styles.hamburger} ${open ? styles.open : ''}`} onClick={() => setOpen(v => !v)} aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open}>
           <span /><span /><span />
         </button>
 
