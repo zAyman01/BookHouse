@@ -643,3 +643,13 @@
 .deleteBtn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 @media (max-width: 768px) { .deleteRow { flex-direction: column; } }
+
+@media (max-width: 480px) {
+  .main { padding: var(--space-3) var(--space-2); }
+  .bannerName { font-size: 20px; }
+  .tabs { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+  .tab { padding: 8px 14px; font-size: 12px; white-space: nowrap; }
+  .content { padding: var(--space-3); }
+  .sectionTitle { font-size: 16px; }
+  .grid { grid-template-columns: 1fr; }
+}

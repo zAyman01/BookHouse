@@ -56,3 +56,18 @@
 .form button { padding: 8px 14px; background: var(--color-primary); color: #fff; border: none; border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font-ui); font-size: 13px; font-weight: 500; transition: background var(--transition); }
 
 .form button:hover { background: var(--color-primary-light); }
+
+@media (max-width: 768px) {
+  .tabs { flex-wrap: wrap; gap: 0; }
+  .tab { padding: 8px 14px; font-size: 12px; }
+  .title { font-size: 22px; }
+  .form { flex-direction: column; }
+  .form input { width: 100%; }
+  .table th, .table td { padding: 8px 10px; font-size: 12px; }
+}
+
+@media (max-width: 480px) {
+  .main { padding: var(--space-4) var(--space-2); }
+  .table th, .table td { padding: 6px 8px; font-size: 11px; }
+  .badge { font-size: 10px; }
+}

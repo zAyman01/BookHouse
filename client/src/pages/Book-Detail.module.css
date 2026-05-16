@@ -215,3 +215,13 @@
   .coverCol { position: static; max-width: 240px; margin: 0 auto var(--space-3); }
   .title { font-size: 28px; }
 }
+
+@media (max-width: 480px) {
+  .main { padding: var(--space-4) var(--space-2); }
+  .title { font-size: 24px; }
+  .actions { flex-direction: column; align-items: stretch; }
+  .addBtn { justify-content: center; }
+  .price { font-size: 22px; }
+  .tabBtn { padding: 8px 12px; font-size: 12px; }
+  .similarGrid { grid-template-columns: repeat(2, 1fr); }
+}

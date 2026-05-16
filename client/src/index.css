@@ -237,3 +237,11 @@ body::after {
     transition-duration: 0.01ms !important;
   }
 }
+
+@media (max-width: 480px) {
+  body { padding-top: 72px; font-size: 15px; }
+  :root {
+    --space-1: 6px; --space-2: 12px; --space-3: 20px;
+    --space-4: 24px; --space-6: 36px; --space-8: 48px;
+  }
+}

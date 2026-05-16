@@ -18,6 +18,7 @@
   align-items: center;
   padding: 0 var(--space-4);
   height: 72px;
+  overflow: hidden;
 }
 
 .logo {
@@ -43,12 +44,15 @@
   flex: 1;
   display: flex;
   align-items: center;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .navWrap {
   flex: 1;
   display: flex;
   justify-content: center;
+  min-width: 0;
 }
 
 .navList {
@@ -232,10 +236,12 @@
 
 .hamburger span {
   display: block;
+  width: 20px;
   height: 2px;
   background: var(--color-text);
   border-radius: 2px;
   transition: all 0.25s ease;
+  flex-shrink: 0;
 }
 
 .open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
@@ -246,11 +252,13 @@
   display: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
+  .inner { overflow: visible; }
+
   .centerGroup {
     position: fixed;
     top: 0; right: 0;
-    width: 280px;
+    width: 300px;
     height: 100vh;
     height: 100dvh;
     overflow-y: auto;
@@ -301,6 +309,7 @@
   .logoText { font-size: 18px; }
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1025px) {
   .overlay { display: none !important; }
+  .inner { overflow: hidden; }
 }

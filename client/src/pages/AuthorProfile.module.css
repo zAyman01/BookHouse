@@ -243,3 +243,11 @@
   .followBtn { width: 100%; justify-content: center; }
   .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 }
+
+@media (max-width: 480px) {
+  .main { padding: var(--space-3) var(--space-2); }
+  .name { font-size: 20px; }
+  .statsRow { flex-wrap: wrap; gap: var(--space-2); }
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .bookCover { height: 140px; }
+}

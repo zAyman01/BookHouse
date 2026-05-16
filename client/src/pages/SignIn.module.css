@@ -160,3 +160,9 @@
 }
 
 .switch a:hover { text-decoration: underline; }
+
+@media (max-width: 480px) {
+  .main { padding: calc(72px + var(--space-4)) var(--space-2) var(--space-6); }
+  .card { padding: var(--space-4) var(--space-3); }
+  .title { font-size: 24px; }
+}

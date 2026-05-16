@@ -66,6 +66,14 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth > 1024) setOpen(false);
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden';
     } else {

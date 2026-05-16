@@ -771,4 +771,49 @@
   .fieldRow {
     grid-template-columns: 1fr;
   }
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pageTitle {
+    font-size: 22px;
+  }
+  .topBar {
+    flex-direction: column;
+  }
+  .bottomRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 48px;
+  }
+  .navItem {
+    padding: 10px 8px;
+  }
+  .mainArea {
+    margin-left: 48px;
+    padding: 16px 12px;
+  }
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  .statNum {
+    font-size: 24px;
+  }
+  .uploadLayout {
+    grid-template-columns: 1fr;
+  }
+  .uploadPreviewCol {
+    position: static;
+    order: -1;
+  }
+  .booksGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .modal {
+    max-width: 90%;
+    padding: var(--space-3);
+  }
 }
