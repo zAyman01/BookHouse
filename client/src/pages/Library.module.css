@@ -34,6 +34,7 @@
   line-height: 1.1;
   letter-spacing: -0.02em;
   text-align: center;
+  max-width: 90vw;
 }
 
 .heroSearch {
@@ -42,14 +43,16 @@
   padding: 6px 6px 6px 20px;
   border-radius: var(--radius-md);
   width: 600px;
-  max-width: 90%;
+  max-width: 90vw;
   background: var(--color-surface);
   gap: 12px;
   color: var(--color-text-muted);
+  box-sizing: border-box;
 }
 
 .heroSearch input {
   flex: 1;
+  min-width: 0;
   padding: 12px 0;
   font-size: 15px;
   color: var(--color-text);
@@ -72,6 +75,8 @@
   cursor: pointer;
   font-family: var(--font-ui);
   transition: background var(--transition);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .heroSearch button:hover { background: var(--color-primary-light); }
@@ -253,7 +258,7 @@
 
 .sortGroup { display: flex; align-items: center; gap: 8px; }
 
-.sortGroup label { font-size: 13px; color: var(--color-text-secondary); font-family: var(--font-ui); }
+.sortGroup label { font-size: 13px; color: var(--color-text-secondary); font-family: var(--font-ui); white-space: nowrap; }
 
 .sortGroup select {
   padding: 6px 10px; font-size: 13px; font-weight: 500;
@@ -413,7 +418,7 @@
 
 .clearBtn { padding: 8px 20px; background: var(--color-primary); color: #fff; border: none; border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font-ui); font-size: 13px; }
 
-.pagination { display: flex; justify-content: center; align-items: center; gap: 6px; padding: var(--space-4) 0; }
+.pagination { display: flex; justify-content: center; align-items: center; gap: 6px; padding: var(--space-4) 0; flex-wrap: wrap; }
 
 .pageBtn {
   min-width: 34px; height: 34px;
@@ -452,20 +457,28 @@
 .pageArrow:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
 .pageArrow:disabled { opacity: 0.3; cursor: not-allowed; }
 
-@media (max-width: 1200px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1201px) {
+  .containerFull .grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 1200px) {
+  .containerFull .grid { grid-template-columns: repeat(3, 1fr); }
+}
 @media (max-width: 960px) {
   .container { flex-direction: column; }
   .sidebar { position: static; flex: none; width: 100%; }
+  .containerFull .grid,
   .grid { grid-template-columns: repeat(2, 1fr); }
   .heroTitle { font-size: 40px; }
 }
 @media (max-width: 640px) {
+  .containerFull .grid,
   .grid { grid-template-columns: 1fr; }
   .heroTitle { font-size: 28px; }
   .hero { min-height: 45vh; }
-  .heroSearch { width: 100%; max-width: 100%; padding: 4px 4px 4px 14px; }
+  .heroSearch { max-width: calc(100vw - 24px); padding: 4px 4px 4px 12px; gap: 8px; }
   .heroSearch input { padding: 10px 0; font-size: 14px; }
-  .heroSearch button { padding: 8px 16px; font-size: 13px; }
+  .heroSearch button { padding: 8px 14px; font-size: 13px; }
   .toolbar { flex-wrap: wrap; gap: var(--space-2); }
   .sortGroup { width: 100%; }
   .sortGroup select { flex: 1; }
@@ -477,4 +490,5 @@
   .heroTitle { font-size: 24px; }
   .hero { min-height: 35vh; padding: var(--space-4); }
   .container { padding: var(--space-3) var(--space-2) var(--space-6); }
+  .heroSearch { max-width: calc(100vw - 16px); padding: 4px 4px 4px 10px; }
 }
